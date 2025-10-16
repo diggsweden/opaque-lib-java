@@ -1,0 +1,15 @@
+package se.digg.crypto.opaque.client;
+
+import org.bouncycastle.math.ec.ECPoint;
+
+/**
+ * Blinded Element
+ */
+
+public record BlindedElement(
+
+  /* Blind data (scalar) used to revert blinding of the blinded element */
+  byte[] blind,
+  /* Blinded element (EC point) */
+  ECPoint blindElement
+) {}
