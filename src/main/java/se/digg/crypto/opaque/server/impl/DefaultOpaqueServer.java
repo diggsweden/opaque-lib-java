@@ -46,22 +46,29 @@ public class DefaultOpaqueServer implements OpaqueServer {
   /** The server HSM protected private key */
   @Setter protected KeyPair staticOprfKeyPair;
 
+  /** Provider of OPRF functions */
   protected final OprfFunctions oprf;
+  /** Provider of key derivation functions */
   protected final KeyDerivationFunctions keyDerivation;
+  /** Provider of hash functions */
   protected final HashFunctions hashFunctions;
 
+
+  /** {@inheritDoc} */
   @Override public RegistrationResponse createRegistrationResponse(byte[] registrationRequest,
     byte[] serverPublicKey ,byte[] credentialIdentifier, byte[] oprfSeed) throws DeserializationException,
     DeriveKeyPairErrorException {
+    log.debug("Creating OPAQUE registration response");
     RegistrationRequest request = RegistrationRequest.fromBytes(registrationRequest);
-
     byte[] evaluatedMessage = getEvaluateMessage(request.blindedMessage(), oprfSeed, credentialIdentifier);
     return new RegistrationResponse(evaluatedMessage, serverPublicKey);
   }
 
+  /** {@inheritDoc} */
   @Override public KE2 generateKe2(byte[] serverIdentity, OprfPrivateKey serverPrivateKey, byte[] serverPublicKey,
     byte[] registrationRecord, byte[] credentialIdentifier, byte[] oprfSeed, byte[] ke1Bytes, byte[] clientIdentity, ServerState state)
     throws DeriveKeyPairErrorException, DeserializationException, InvalidInputException {
+    log.debug("Generating OPAQUE KE2");
     RegistrationRecord record = RegistrationRecord.fromBytes(registrationRecord, oprf.getOPRFSerializationSize(), hashFunctions.getHashSize(), keyDerivation.getNonceSize());
     KE1 ke1 = KE1.fromBytes(ke1Bytes, oprf.getOPRFSerializationSize(), keyDerivation.getNonceSize());
     CredentialResponse credentialResponse = createCredentialResponse(ke1.credentialRequest(), serverPublicKey, record,
@@ -81,11 +88,23 @@ public class DefaultOpaqueServer implements OpaqueServer {
     return new KE2(credentialResponse, authResponse);
   }
 
+  /** {@inheritDoc} */
   @Override public byte[] serverFinish(byte[] ke3Bytes, ServerState state) throws ClientAuthenticationException {
+    log.debug("OPAQUE server finish");
     KE3 ke3 = KE3.fromBytes(ke3Bytes);
     return authServerFinalize(ke3, state);
   }
 
+  /**
+   * Finalizes the server authentication process by verifying the client's message authentication code (MAC) and
+   * returning the established session key.
+   *
+   * @param ke3 the third key exchange message containing the client's MAC
+   * @param state the current server state, including the expected client MAC and session key
+   * @return the session key derived during the key exchange process
+   * @throws ClientAuthenticationException if the client's MAC does not match the server's expected value,
+   *                                        indicating a failed client authentication
+   */
   protected byte[] authServerFinalize(KE3 ke3, ServerState state) throws ClientAuthenticationException {
     if (!Arrays.equals(ke3.clientMac(), state.getAkeState().getExpectedClientMac())) {
       throw new ClientAuthenticationException("Client authentication failed - Client mac mismatch");
@@ -93,6 +112,20 @@ public class DefaultOpaqueServer implements OpaqueServer {
     return state.getAkeState().getSessionKey();
   }
 
+  /**
+   * Creates a CredentialResponse object by combining the evaluated message, masking nonce,
+   * and masked response, which are derived from the provided input parameters.
+   *
+   * @param request the CredentialRequest containing the blinded message used for evaluating the response.
+   * @param serverPublicKey the server's public key used in constructing the masked response.
+   * @param record the RegistrationRecord containing the client's public key, masking key, and envelope.
+   * @param credentialIdentifier a unique identifier for the credential being processed.
+   * @param oprfSeed a seed value used for key derivation and blinding during the OPRF process.
+   * @return a CredentialResponse object containing the evaluated message, masking nonce, and masked response.
+   * @throws DeriveKeyPairErrorException if there is an error while deriving a key pair during the OPRF evaluation.
+   * @throws DeserializationException if there is an error deserializing input data during processing.
+   * @throws InvalidInputException if any provided input data is found to be invalid.
+   */
   protected CredentialResponse createCredentialResponse(CredentialRequest request, byte[] serverPublicKey,
     RegistrationRecord record, byte[] credentialIdentifier, byte[] oprfSeed)
     throws DeriveKeyPairErrorException, DeserializationException, InvalidInputException {
@@ -106,6 +139,19 @@ public class DefaultOpaqueServer implements OpaqueServer {
     return new CredentialResponse(evaluatedMessage, maskingNonce, maskedResponse);
   }
 
+  /**
+   * Evaluates a blinded message using the OPRF (Oblivious Pseudorandom Function) protocol and returns the serialized result.
+   * The evaluation involves deriving a key pair from the provided seed and credential identifier, and then performing
+   * blind evaluation using the appropriate private key. If a static OPRF key pair is available, it is used in combination
+   * to finalize the evaluation.
+   *
+   * @param blindedMessage the blinded message provided by the client to be evaluated
+   * @param oprfSeed the seed used for key derivation within the OPRF protocol
+   * @param credentialIdentifier a unique credential identifier used for key derivation
+   * @return the serialized evaluated element resulting from the OPRF protocol
+   * @throws DeriveKeyPairErrorException if an error occurs during key pair derivation
+   * @throws DeserializationException if an error occurs while deserializing elements
+   */
   protected byte[] getEvaluateMessage(byte[] blindedMessage, byte[] oprfSeed, byte[] credentialIdentifier)
     throws DeriveKeyPairErrorException, DeserializationException {
     byte[] seed = keyDerivation.expand(oprfSeed, OpaqueUtils.concat(credentialIdentifier, "OprfKey"), oprf.getOprfPrivateKeySize());
@@ -113,12 +159,40 @@ public class DefaultOpaqueServer implements OpaqueServer {
     ECPoint blindedElement = oprf.deserializeElement(blindedMessage);
     ECPoint evaluatedElement = oprf.blindEvaluate(new OprfPrivateKey(keyPair.privateKey()), blindedElement);
     if (staticOprfKeyPair == null) {
+      log.debug("No static (HSM) OPRF key pair configured. No further actions on the evaluated element.");
       return oprf.serializeElement(evaluatedElement);
     }
+    log.debug("Using static (HSM) OPRF key pair to finalize the evaluated element.");
     ECPoint staticKeyEvaluated = oprf.blindEvaluate(new OprfPrivateKey(staticOprfKeyPair), evaluatedElement);
     return oprf.serializeElement(staticKeyEvaluated);
   }
 
+  /**
+   * Responds to the client's authentication request during the OPAQUE protocol by deriving shared
+   * secrets and constructing the authentication response. This process involves generating
+   * nonces, performing Diffie-Hellman operations, deriving shared keys, and computing message
+   * authentication codes (MACs).
+   *
+   * @param cleartextCredentials the cleartext credentials containing the server's public key,
+   *                              server identity, and client identity
+   * @param serverPrivateKey     the server's private key used for the Diffie-Hellman operations
+   * @param clientPublicKey      the client's public key used in the authentication
+   * @param ke1                  the first key exchange message from the client, containing the
+   *                              authentication request and credential request
+   * @param credentialResponse   the credential response generated as part of the OPRF protocol,
+   *                              including the evaluated message, masking nonce, and masked response
+   * @param state                the current state of the server, used to track the authentication
+   *                              and session key negotiation process
+   * @return an AuthResponse object containing the server nonce, server public key share, and the
+   *         computed server MAC to be sent to the client
+   * @throws DeriveKeyPairErrorException if an error occurs during Diffie-Hellman key pair derivation
+   * @throws InvalidInputException       if any of the input data is invalid or improperly formatted
+   * @throws DeserializationException    if an error occurs while deserializing protocol elements
+   * @throws NoSuchAlgorithmException    if a required cryptographic algorithm is unavailable
+   * @throws InvalidKeySpecException     if the key specification is invalid during key handling
+   * @throws InvalidKeyException         if a key is invalid for cryptographic operations
+   * @throws NoSuchProviderException     if a required cryptographic provider is unavailable
+   */
   protected AuthResponse authServerRespond(CleartextCredentials cleartextCredentials, OprfPrivateKey serverPrivateKey, byte[] clientPublicKey, KE1 ke1, CredentialResponse credentialResponse, ServerState state)
     throws DeriveKeyPairErrorException, InvalidInputException, DeserializationException, NoSuchAlgorithmException,
     InvalidKeySpecException, InvalidKeyException, NoSuchProviderException {

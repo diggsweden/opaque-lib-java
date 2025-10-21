@@ -3,6 +3,7 @@ package se.digg.crypto.opaque.client.impl;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.ec.ECPoint;
 
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 /**
  * Default implementation of the Opaque client
  */
+@Slf4j
 @RequiredArgsConstructor
 public class DefaultOpaqueClient implements OpaqueClient {
 
@@ -59,6 +61,7 @@ public class DefaultOpaqueClient implements OpaqueClient {
   /** {@inheritDoc} */
   @Override public RegistrationRequestResult createRegistrationRequest(byte[] password)
     throws DeriveKeyPairErrorException {
+    log.debug("Creating OPAQUE registration request");
     BlindedElement blindData = oprf.blind(password);
     byte[] blindedMessage = oprf.serializeElement(blindData.blindElement());
     RegistrationRequest request = new RegistrationRequest(blindedMessage);
@@ -69,6 +72,7 @@ public class DefaultOpaqueClient implements OpaqueClient {
   @Override public RegistrationFinalizationResult finalizeRegistrationRequest(byte[] password, byte[] blind, byte[] registrationResponseBytes,
     byte[] serverIdentity, byte[] clientIdentity)
     throws DeserializationException, DeriveKeyPairErrorException, InvalidInputException {
+    log.debug("Finalizing OPAQUE registration");
 
     RegistrationResponse registrationRespons = RegistrationResponse.fromBytes(registrationResponseBytes,
       oprf.getOPRFSerializationSize());
@@ -87,7 +91,7 @@ public class DefaultOpaqueClient implements OpaqueClient {
 
   /** {@inheritDoc} */
   @Override public KE1 generateKe1(byte[] password, ClientState state) throws DeriveKeyPairErrorException {
-
+    log.debug("Generating OPAQUE KE1");
     CredentialRequestData credentialRequestData = createCredentialRequest(password);
     state.setPassword(password);
     state.setBlind(credentialRequestData.blind());
@@ -98,6 +102,7 @@ public class DefaultOpaqueClient implements OpaqueClient {
   @Override public ClientKeyExchangeResult generateKe3(byte[] clientIdentity, byte[] serverIdentity, byte[] ke2Bytes, ClientState clientState)
     throws EvelopeRecoveryException, DeriveKeyPairErrorException, DeserializationException,
     ServerAuthenticationException, InvalidInputException {
+    log.debug("Generating OPAQUE KE3");
     KE2 ke2 = KE2.fromBytes(ke2Bytes, keyDerivation.getNonceSize(), hashFunctions.getMacSize(),
       oprf.getOPRFSerializationSize());
     ClientRecoverRecord clientRecoverRecord = recoverCredentials(clientState.getPassword(), clientState.getBlind(),
@@ -107,7 +112,19 @@ public class DefaultOpaqueClient implements OpaqueClient {
     return new ClientKeyExchangeResult(authClientFinalizeResult.ke3(), authClientFinalizeResult.sessionKey(), clientRecoverRecord.exportKey());
   }
 
-
+  /**
+   * Creates client store record by deriving various cryptographic keys and creating an encrypted envelope.
+   * This record is used for interim storage of client key derivation data in OPAQUE client operations.
+   * This is the output of the store function defined in OPAQUE.
+   *
+   * @param randomizedPassword The processed password used for secure key derivation.
+   * @param serverPublicKey The public key of the server used in key agreement operations.
+   * @param serverIdentity The identity of the server as a byte array.
+   * @param clientIdentity The identity of the client as a byte array.
+   * @return A {@code ClientStoreRecord} The record.
+   * @throws DeriveKeyPairErrorException If an error occurs during the derivation of the key pair.
+   * @throws InvalidInputException If the input values are invalid or improperly formatted.
+   */
   protected ClientStoreRecord store(byte[] randomizedPassword, byte[] serverPublicKey, byte[] serverIdentity,
     byte[] clientIdentity) throws DeriveKeyPairErrorException, InvalidInputException {
     byte[] envelopeNonce = OpaqueUtils.random(keyDerivation.getNonceSize());
@@ -128,6 +145,20 @@ public class DefaultOpaqueClient implements OpaqueClient {
     return new ClientStoreRecord(envelope, clientPublicKey, maskingKey, exportKey);
   }
 
+  /**
+   * Recovers client credentials from a secure envelope and derives cryptographic keys for further operations.
+   * This is the recover function defined in OPAQUE
+   *
+   * @param randomizedPassword The processed password used as input to cryptographic key derivation.
+   * @param serverPublicKey The public key of the server, used in the recovery process.
+   * @param envelope The envelope containing nonce and authentication data for validation.
+   * @param serverIdentity The identity of the server, used in cleartext credential creation.
+   * @param clientIdentity The identity of the client, used in cleartext credential creation.
+   * @return A {@code ClientRecoverRecord} containing the recovered cryptographic key pair, cleartext credentials, and export key.
+   * @throws EvelopeRecoveryException If the envelope's authentication tag does not match the expected value.
+   * @throws DeriveKeyPairErrorException If an error occurs during the derivation of the Diffie-Hellman key pair.
+   * @throws InvalidInputException If the input parameters have invalid or incorrect formats.
+   */
   protected ClientRecoverRecord recover(byte[] randomizedPassword, byte[] serverPublicKey, Envelope envelope,
     byte[] serverIdentity, byte[] clientIdentity)
     throws EvelopeRecoveryException, DeriveKeyPairErrorException, InvalidInputException {
@@ -149,6 +180,19 @@ public class DefaultOpaqueClient implements OpaqueClient {
     return new ClientRecoverRecord(keyPair, cleartextCredentials, exportKey);
   }
 
+  /**
+   * Creates a credential request using the given password. This involves blinding the password
+   * to generate a blinded message and its corresponding blind data. The method returns
+   * a {@code CredentialRequestData} object containing the credential request and the blind used
+   * in the process.
+   *
+   * @param password The user's password as a byte array. This is the input used for creating
+   *                 the blinded data and credential request.
+   * @return An instance of {@code CredentialRequestData}, encapsulating the credential request
+   *         and the blind used during the process.
+   * @throws DeriveKeyPairErrorException If an error occurs during the process of blinding
+   *         the password or serializing the blinded element.
+   */
   protected CredentialRequestData createCredentialRequest(byte[] password) throws DeriveKeyPairErrorException {
     BlindedElement blindData = oprf.blind(password);
     byte[] blindedMessage = oprf.serializeElement(blindData.blindElement());
@@ -156,6 +200,23 @@ public class DefaultOpaqueClient implements OpaqueClient {
     return new CredentialRequestData(credentialRequest, blindData.blind());
   }
 
+  /**
+   * Recovers credentials for the client by deriving cryptographic keys and reconstructing the
+   * key pair and identity information necessary for secure authentication. This method involves
+   * OPAQUE protocol steps including deserialization of server data, hashing, key derivation,
+   * and envelope decryption.
+   *
+   * @param password The user's password as a byte array.
+   * @param blind The blinded password data, used as part of the OPAQUE protocol.
+   * @param response The server's credential response object, containing evaluated elements and masked data.
+   * @param serverIdentity The identity of the server as a byte array.
+   * @param clientIdentity The identity of the client as a byte array.
+   * @return A {@code ClientRecoverRecord} which contains the recovered key pair, cleartext credentials, and export key.
+   * @throws DeserializationException If an error occurs while deserializing the server's evaluated element.
+   * @throws EvelopeRecoveryException If an error occurs during envelope validation or recovery.
+   * @throws DeriveKeyPairErrorException If an error occurs while deriving cryptographic keys.
+   * @throws InvalidInputException If any of the input parameters are invalid or improperly formatted.
+   */
   protected ClientRecoverRecord recoverCredentials(byte[] password, byte[] blind,
     CredentialResponse response, byte[] serverIdentity, byte[] clientIdentity)
     throws DeserializationException, EvelopeRecoveryException, DeriveKeyPairErrorException, InvalidInputException {
@@ -177,6 +238,19 @@ public class DefaultOpaqueClient implements OpaqueClient {
       Envelope.fromBytes(envelope, keyDerivation.getNonceSize()), serverIdentity, clientIdentity);
   }
 
+  /**
+   * Initiates the client-side of the authentication process by generating a key exchange
+   * message (KE1) and updating the client's AKE state.
+   *
+   * @param credentialRequest The credential request containing the blinded password message to be
+   *                          sent to the server.
+   * @param akeState The client's AKE state, which is updated with the client's secret key and the
+   *                 generated KE1 message.
+   * @return The generated KE1 message which contains the credential request and authentication
+   *         request to be sent to the server.
+   * @throws DeriveKeyPairErrorException If an error occurs during the derivation of the Diffie-Hellman
+   *                                     key pair.
+   */
   protected KE1 authClientStart(CredentialRequest credentialRequest, ClientAkeState akeState) throws DeriveKeyPairErrorException {
     byte[] clientNonce = OpaqueUtils.random(keyDerivation.getNonceSize());
     byte[] clientKeyshareSeed = OpaqueUtils.random(keyDerivation.getSeedSize());
@@ -188,6 +262,25 @@ public class DefaultOpaqueClient implements OpaqueClient {
     return ke1;
   }
 
+  /**
+   * Finalizes the client-side authentication process as part of the OPAQUE protocol.
+   * This involves verifying server authentication, deriving shared secrets, and generating
+   * the final key exchange message (KE3) to complete the mutual authentication process.
+   *
+   * @param cleartextCredentials The cleartext credentials containing the server's public key
+   *                              and identities of the client and server.
+   * @param clientPrivateKey     The private key of the client used to perform key agreement.
+   * @param ke2                  The second key exchange message from the server, containing
+   *                              the server's authentication response and credential response.
+   * @param state                The client's state object, maintaining state information
+   *                              necessary for the authentication process.
+   * @return An {@code AuthClientFinalizeResult} containing the final key exchange message (KE3)
+   *         and the derived session key for secure communication.
+   * @throws ServerAuthenticationException If server authentication fails during the process
+   *                                        due to mismatched authentication information.
+   * @throws InvalidInputException         If any of the input parameters are invalid or improperly formatted.
+   * @throws DeserializationException      If an error occurs while deserializing components of the server's response.
+   */
   protected AuthClientFinalizeResult authClientFinalize(CleartextCredentials cleartextCredentials,
     byte[] clientPrivateKey, KE2 ke2, ClientState state)
     throws ServerAuthenticationException, InvalidInputException, DeserializationException {
