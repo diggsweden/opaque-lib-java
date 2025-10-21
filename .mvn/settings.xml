@@ -1,0 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2025 The Opaque Java Authors
+
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<settings>
+  <servers>
+    <server>
+      <id>central</id>
+      <username>${env.MAVEN_CENTRAL_USERNAME}</username>
+      <password>${env.MAVEN_CENTRAL_PASSWORD}</password>
+    </server>
+  </servers>
+</settings>

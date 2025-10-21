@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 The Opaque Java Authors
+
+SPDX-License-Identifier: EUPL-1.2
+-->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -17,7 +23,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <slf4j.version>2.0.17</slf4j.version>
     <bouncycastle.version>1.82</bouncycastle.version>
-    <hash-to-curve.version>1.1.1</hash-to-curve.version>
+    <hash-to-curve.version>0.0.1-SNAPSHOT</hash-to-curve.version>
   </properties>
 
   <licenses>
@@ -44,9 +50,15 @@
 
   <repositories>
     <repository>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
+      <name>Central Portal Snapshots</name>
+      <id>central-portal-snapshots</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
@@ -86,7 +98,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.42</version>
+      <version>1.18.36</version>
     </dependency>
 
     <dependency>
@@ -130,34 +142,16 @@
 
   <build>
     <plugins>
-
+      <!-- Deployment -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
         <configuration>
-          <release>${java.version}</release>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
-        <configuration>
-          <parallel>methods</parallel>
-          <threadCount>10</threadCount>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.10.1</version>
-        <configuration>
-          <doctitle>OPAQUE java - ${project.version}</doctitle>
-          <windowtitle>OPAQUE java - ${project.version}</windowtitle>
-          <source>${java.version}</source>
+          <checksums>all</checksums>
+          <skipPublishing>false</skipPublishing>
+          <publishingServerId>central</publishingServerId>
         </configuration>
       </plugin>
 
@@ -183,4 +177,59 @@
     </plugins>
   </build>
 
+<profiles>
+    <profile>
+      <id>central-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${maven.gpg.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Sources -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>${maven.source.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Documentation -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${maven.javadoc.plugin.version}</version>
+            <configuration>
+              <source>${java.version}</source>
+              <bottom>hash-to-curve for Java documentation, generated in {currentYear}.</bottom>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>diggsweden/.github:renovate-base"
+  ],
+  "enabledManagers": [
+    "github-actions",
+    "maven"
+  ],
+  "packageRules": [
+    {
+      "description": "Maven dependencies - Major updates",
+      "matchManagers": ["maven"],
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["java", "dependencies", "major-update"],
+      "groupName": "java major"
+    },
+    {
+      "description": "Maven dependencies - Non-major updates",
+      "matchManagers": ["maven"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "addLabels": ["java", "dependencies"],
+      "groupName": "java non-major"
+    },
+    {
+      "description": "Maven Build Plugins",
+      "groupName": "maven build plugins",
+      "matchPackageNames": [
+        "/^org\\.apache\\.maven\\.plugins:/"
+      ]
+    },
+    {
+      "description": "Bouncy Castle dependencies",
+      "groupName": "bouncy castle",
+      "matchPackageNames": [
+        "/^org\\.bouncycastle:/"
+      ]
+    }
+  ]
+}

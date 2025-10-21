@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2025 The Opaque Java Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version = 1
+
+# Main project files
+[[annotations]]
+path = [
+    "CHANGELOG.md",
+    "README.md",
+    "docs/DEVELOPMENT.md",
+    "REUSE.toml",
+    "pom.xml",
+    "**/*.cddl",
+    "renovate.json",
+    ".mvn/settings.xml",
+    "**/*/pmd_default_java.xml",
+    "**/*.json",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 The Opaque Java Authors"
+SPDX-License-Identifier = "CC0-1.0"
+
+
+[[annotations]]
+path = [
+    "**/*/eclipse-java-google-style.xml",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "google/styleguide"
+SPDX-License-Identifier = "CC-BY-3.0"
+
+
+[[annotations]]
+path = [
+    "**/*/google_checks.xml",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "checkstyle/checkstyle"
+SPDX-License-Identifier = "CC0-1.0"

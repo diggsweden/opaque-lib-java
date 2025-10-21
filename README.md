@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 The Opaque Java Authors
+
+SPDX-License-Identifier: EUPL-1.2
+-->
+
 # OPAQUE client java
 
 # 1. Usage
