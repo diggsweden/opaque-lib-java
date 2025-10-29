@@ -26,6 +26,20 @@ readonly MISSING=$'\xE2\x9D\x8C'
 #MAVEN OPTS
 readonly MAVEN_CLI_OPTS=(--batch-mode --no-transfer-progress --errors --fail-at-end -Dstyle.color=always -DinstallAtEnd=true -DdeployAtEnd=true)
 
+# Determine container runtime
+CONTAINER_RUNTIME=""
+
+determine_container_runtime() {
+  if command -v podman &>/dev/null; then
+    CONTAINER_RUNTIME="podman"
+  elif command -v docker &>/dev/null; then
+    CONTAINER_RUNTIME="docker"
+  else
+    printf '%b Error:%b Neither podman https://podman.io/ nor docker https://docker.io/ is available in path/installed.\n' "${RED}" "${NC}" >&2
+    exit 1
+  fi
+}
+
 is_command_available() {
   local COMMAND="${1}"
   local INFO="${2}"
@@ -58,14 +72,14 @@ store_exit_code() {
 lint() {
   export MEGALINTER_DEF_WORKSPACE='/repo'
   print_header 'LINTER HEALTH (MEGALINTER)'
-  podman run --rm --volume "$(pwd)":/repo -e MEGALINTER_CONFIG='development/megalinter.yml' -e DEFAULT_WORKSPACE=${MEGALINTER_DEF_WORKSPACE} -e LOG_LEVEL=INFO ghcr.io/oxsecurity/megalinter-java:v8.8.0
+  ${CONTAINER_RUNTIME} run --rm --volume "$(pwd)":/repo -e MEGALINTER_CONFIG='development/megalinter.yml' -e DEFAULT_WORKSPACE=${MEGALINTER_DEF_WORKSPACE} -e LOG_LEVEL=INFO ghcr.io/oxsecurity/megalinter-java:v8.8.0
   store_exit_code "$?" "Lint" "${MISSING} ${RED}Lint check failed, see logs (std out and/or ./megalinter-reports) and fix problems.${NC}\n" "${GREEN}${CHECKMARK}${CHECKMARK} Lint check passed${NC}\n"
   printf '\n\n'
 }
 
 license() {
   print_header 'LICENSE HEALTH (REUSE)'
-  podman run --rm --volume "$(pwd)":/data docker.io/fsfe/reuse:5.0.2-debian lint
+  ${CONTAINER_RUNTIME} run --rm --volume "$(pwd)":/data docker.io/fsfe/reuse:5.0.2-debian lint
   store_exit_code "$?" "License" "${MISSING} ${RED}License check failed, see logs and fix problems.${NC}\n" "${GREEN}${CHECKMARK}${CHECKMARK} License check passed${NC}\n"
   printf '\n\n'
 }
@@ -80,7 +94,7 @@ commit() {
     printf "%s" "${GREEN} No commits found in current branch: ${YELLOW}${currentBranch}${NC}, compared to: ${YELLOW}${compareToBranch}${NC} ${NC}"
     store_exit_code "$?" "Commit" "${MISSING} ${RED}Commit check count failed, see logs (std out) and fix problems.${NC}\n" "${YELLOW}${CHECKMARK}${CHECKMARK} Commit check skipped, no new commits found in current branch: ${YELLOW}${currentBranch}${NC}\n"
   else
-    podman run --rm -i --volume "$(pwd)":/repo -w /repo ghcr.io/siderolabs/conform:v0.1.0-alpha.30-2-gfadbbb4 enforce --base-branch="${compareToBranch}"
+    ${CONTAINER_RUNTIME} run --rm -i --volume "$(pwd)":/repo -w /repo ghcr.io/siderolabs/conform:v0.1.0-alpha.30-2-gfadbbb4 enforce --base-branch="${compareToBranch}"
     store_exit_code "$?" "Commit" "${MISSING} ${RED}Commit check failed, see logs (std out) and fix problems.${NC}\n" "${GREEN}${CHECKMARK}${CHECKMARK} Commit check passed${NC}\n"
   fi
 
@@ -123,9 +137,7 @@ check_exit_codes() {
   fi
 }
 
-is_command_available 'podman' 'https://podman.io/'
-is_command_available 'node' 'https://nodejs.org/'
-is_command_available 'npm' 'https://nodejs.org/'
+determine_container_runtime
 is_command_available 'sed' ''
 
 lint
