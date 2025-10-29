@@ -18,7 +18,6 @@ import java.util.Optional;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
@@ -133,7 +132,7 @@ public class TestVectorTests {
     OpaqueTestVectorData testVectors = opaqueTestVectors.get(vectorIndex);
     log.info("TestVector 6 - P256-SHA256\n {}", TestData.jsonPrettyPrinter().writeValueAsString(testVectors));
 
-    ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256");
+    //ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256");
     StretchAlgorithm stretchAlgorithm = new ArgonStretch(ArgonStretch.ARGON_PROFILE_IDENTITY);
     HashFunctions hashFunctions = new HashFunctions(new SHA256Digest(), stretchAlgorithm);
     OpaqueCurve opaqueCurve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"), HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_, new DstContext(DstContext.IDENTIFIER_P256_SHA256));
@@ -259,7 +258,7 @@ public class TestVectorTests {
     log.info("Hash-to-group dst: {}", new String(dstContext.getHash2CurveDST()));
     log.info("Key derivation dst: {}", new String(dstContext.getDomainSeparationTag("DeriveKeyPair")));
 
-    ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256");
+    //ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256");
     StretchAlgorithm stretchAlgorithm = new ArgonStretch(ArgonStretch.ARGON_PROFILE_IDENTITY);
     HashFunctions hashFunctions = new HashFunctions(new SHA256Digest(), stretchAlgorithm);
     OpaqueCurve opaqueCurve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"), HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_, new DstContext(DstContext.IDENTIFIER_P256_SHA256));

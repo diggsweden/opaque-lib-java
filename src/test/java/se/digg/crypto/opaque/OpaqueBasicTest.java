@@ -6,7 +6,6 @@ package se.digg.crypto.opaque;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.Security;

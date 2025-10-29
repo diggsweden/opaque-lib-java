@@ -5,7 +5,6 @@
 package se.digg.crypto.opaque.server;
 
 import java.security.KeyPair;
-import java.security.PrivateKey;
 
 import se.digg.crypto.opaque.crypto.OprfPrivateKey;
 import se.digg.crypto.opaque.dto.KE2;

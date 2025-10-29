@@ -23,7 +23,7 @@ public record RegistrationRecord(
 
   public static RegistrationRecord fromBytes(byte[] registrationRecordBytes, int clientPkLen,
     int hashLen, int nonceLen) throws InvalidInputException {
-    int envelopeLen = registrationRecordBytes.length - (clientPkLen + hashLen);
+    // int envelopeLen = registrationRecordBytes.length - (clientPkLen + hashLen);
     TLSSyntaxParser parser = new TLSSyntaxParser(registrationRecordBytes);
     return new RegistrationRecord(
       parser.extractFixedLength(clientPkLen),

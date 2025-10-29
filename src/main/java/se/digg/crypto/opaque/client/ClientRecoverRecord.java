@@ -4,8 +4,6 @@
 
 package se.digg.crypto.opaque.client;
 
-import java.security.KeyPair;
-
 import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 
 /**

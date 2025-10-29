@@ -4,11 +4,8 @@
 
 package se.digg.crypto.opaque.protocol;
 
-import java.math.BigInteger;
-
 import org.bouncycastle.util.Arrays;
 
-import lombok.Getter;
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.error.InvalidInputException;
 

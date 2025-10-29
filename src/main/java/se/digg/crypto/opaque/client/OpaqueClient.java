@@ -4,14 +4,7 @@
 
 package se.digg.crypto.opaque.client;
 
-import java.security.PrivateKey;
-
-import se.digg.crypto.opaque.dto.CredentialRequest;
-import se.digg.crypto.opaque.dto.CredentialResponse;
-import se.digg.crypto.opaque.dto.Envelope;
 import se.digg.crypto.opaque.dto.KE1;
-import se.digg.crypto.opaque.dto.KE2;
-import se.digg.crypto.opaque.dto.RegistrationResponse;
 import se.digg.crypto.opaque.error.DeriveKeyPairErrorException;
 import se.digg.crypto.opaque.error.DeserializationException;
 import se.digg.crypto.opaque.error.EvelopeRecoveryException;

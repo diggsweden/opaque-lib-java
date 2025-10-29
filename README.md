@@ -92,7 +92,7 @@ Instantiation of an OpaqueClient object is demonstrated in the following example
 
 > OpaqueClient client = new DefaultOpaqueClient(oprf, hkdf, hashFunctions);
 
-This interface provides functions to generate all client data needed to engage in the Opaque protocol exchange as well as 
+This interface provides functions to generate all client data needed to engage in the Opaque protocol exchange as well as
 all data that needs to be stored in as session data or static records.
 
 
@@ -122,11 +122,11 @@ The following protocol changes are made to the OPRF function:
 
 Blind evaluate calculation is updated to:
 
-> blindEvalueate = Ppw * b * rs [* ks ]
+> blindEvalueate = Ppw *b* rs [* ks ]
 
 Where `Ppw` is the password point derived from G.HashToGroup(password), `b`
 is the blind `rs` is the derived OPRF private key (as defined in OPAQUE)
-and `ks` is an optional static server private key that may be maintained in an HSM. 
+and `ks` is an optional static server private key that may be maintained in an HSM.
 
 ## 2.3 Usage
 

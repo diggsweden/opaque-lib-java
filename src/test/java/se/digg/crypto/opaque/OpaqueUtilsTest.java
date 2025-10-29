@@ -184,7 +184,7 @@ class OpaqueUtilsTest {
     }
     log.info("Random distribution: {}", distribution);
 
-    int expected = random.length / 256;
+    //int expected = random.length / 256;
     int lowest = distribution[0];
     int highest = distribution[0];
     for (int i = 0; i < 256; i++) {

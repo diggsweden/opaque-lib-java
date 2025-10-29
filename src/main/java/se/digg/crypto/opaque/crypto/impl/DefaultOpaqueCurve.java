@@ -5,7 +5,6 @@
 package se.digg.crypto.opaque.crypto.impl;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 import org.bouncycastle.crypto.Digest;
@@ -19,7 +18,6 @@ import org.bouncycastle.util.Arrays;
 
 import se.digg.crypto.hashtocurve.CurveProcessor;
 import se.digg.crypto.hashtocurve.HashToEllipticCurve;
-import se.digg.crypto.hashtocurve.HashToField;
 import se.digg.crypto.hashtocurve.HashToScalar;
 import se.digg.crypto.hashtocurve.MapToCurve;
 import se.digg.crypto.hashtocurve.MessageExpansion;
@@ -31,7 +29,6 @@ import se.digg.crypto.hashtocurve.impl.ShallueVanDeWoestijneMapToCurve;
 import se.digg.crypto.hashtocurve.impl.XmdMessageExpansion;
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.crypto.DstContext;
-import se.digg.crypto.opaque.crypto.HashFunctions;
 import se.digg.crypto.opaque.crypto.OpaqueCurve;
 
 /**

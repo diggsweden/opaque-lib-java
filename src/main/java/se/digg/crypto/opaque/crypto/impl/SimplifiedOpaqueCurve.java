@@ -89,7 +89,7 @@ public class SimplifiedOpaqueCurve implements OpaqueCurve {
 
   @Override public ECPoint hashToGroup(byte[] seed) {
     ECPoint result = null;
-    ECPoint temp = null;
+    //ECPoint temp;
     int successAttempt = -1;
     int failedAttempts = 0;
     int successAttempts = 0;
@@ -101,7 +101,8 @@ public class SimplifiedOpaqueCurve implements OpaqueCurve {
           result = ecPoint;
           successAttempts++;
         } else {
-          temp = parameterSpec.getG();
+          //temp =
+          parameterSpec.getG();
           failedAttempts++;
         }
       } else {
@@ -110,7 +111,8 @@ public class SimplifiedOpaqueCurve implements OpaqueCurve {
           result = result;
           successAttempts++;
         } else {
-          temp = parameterSpec.getG();
+          //temp =
+          parameterSpec.getG();
           failedAttempts++;
         }
       }
@@ -189,8 +191,7 @@ public class SimplifiedOpaqueCurve implements OpaqueCurve {
     try {
       parameterSpec.getCurve().decodePoint(Hex.decode(invalidPoint));
     } catch (Exception ignored) {
-      // This should allways be an exception
-      int sdf = 0;
+      // This should always be an exception
     }
     return result;
   }

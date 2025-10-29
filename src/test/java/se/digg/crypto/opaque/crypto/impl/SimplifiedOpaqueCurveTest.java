@@ -4,7 +4,6 @@
 
 package se.digg.crypto.opaque.crypto.impl;
 
-import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -16,11 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import lombok.extern.slf4j.Slf4j;
 import se.digg.crypto.opaque.crypto.HashFunctions;
-import se.digg.crypto.opaque.crypto.OpaqueCurve;
 import se.digg.crypto.opaque.utils.TU;
 
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;

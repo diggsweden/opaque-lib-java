@@ -7,7 +7,6 @@ package se.digg.crypto.opaque.client;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Client state

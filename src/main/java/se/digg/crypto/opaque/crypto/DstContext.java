@@ -4,7 +4,6 @@
 
 package se.digg.crypto.opaque.crypto;
 
-import lombok.RequiredArgsConstructor;
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.error.InvalidInputException;
 

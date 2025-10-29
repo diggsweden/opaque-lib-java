@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.ec.ECPoint;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.client.AuthClientFinalizeResult;
 import se.digg.crypto.opaque.client.BlindedElement;

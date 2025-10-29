@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
-import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.Security;
 
@@ -200,7 +199,8 @@ class OprfFunctionsTest {
 
     OprfFunctions oprf = new DefaultOprfFunction(opaqueCurve, hashFunctions, "test");
     KeyPair serverK = oprf.getKeyPair(oprf.deriveDiffieHellmanKeyPair(OpaqueUtils.random(20)));
-    KeyPairRecord oprfKey = oprf.deriveDiffieHellmanKeyPair("oprfKey".getBytes(StandardCharsets.UTF_8));
+    //KeyPairRecord oprfKey =
+    oprf.deriveDiffieHellmanKeyPair("oprfKey".getBytes(StandardCharsets.UTF_8));
 
     BigInteger blind = opaqueCurve.randomScalar();
     BigInteger blindInverse = blind.modInverse(opaqueCurve.getParameterSpec().getCurve().getOrder());
