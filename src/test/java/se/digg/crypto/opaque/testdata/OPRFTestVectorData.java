@@ -32,7 +32,7 @@ public class OPRFTestVectorData {
   @Data
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class OPRFTestVectors{
+  public static class OPRFTestVectors {
 
     @JsonProperty("Batch")
     int batch;

@@ -9,21 +9,23 @@ package se.digg.crypto.opaque.utils;
  */
 public class SLB {
 
-  public static SLB getInstance(){
+  public static SLB getInstance() {
     return new SLB();
   }
 
   private StringBuilder sb = new StringBuilder();
 
-  public SLB append(Object o){
+  public SLB append(Object o) {
     sb.append(o);
     return this;
   }
-  public SLB appendLine(Object o){
+
+  public SLB appendLine(Object o) {
     sb.append(o).append("\n");
     return this;
   }
-  public SLB appendLines(Object o){
+
+  public SLB appendLines(Object o) {
     sb.append(o).append("\n\n");
     return this;
   }

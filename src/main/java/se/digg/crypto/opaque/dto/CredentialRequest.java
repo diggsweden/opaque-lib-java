@@ -5,13 +5,13 @@
 package se.digg.crypto.opaque.dto;
 
 /**
- * CredentialRequestRecord
+ * CredentialRequestRecord.
  */
-public record CredentialRequest(
-  byte[] blindedMessage
-) {
 
-  public static CredentialRequest fromBytes(byte[] blindedMessage){
+public record CredentialRequest(
+    byte[] blindedMessage) {
+
+  public static CredentialRequest fromBytes(byte[] blindedMessage) {
     return new CredentialRequest(blindedMessage);
   }
 

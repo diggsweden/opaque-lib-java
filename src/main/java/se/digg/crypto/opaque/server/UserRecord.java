@@ -5,8 +5,10 @@
 package se.digg.crypto.opaque.server;
 
 /**
- * User record for Opaque exchange
+ * User record for Opaque exchange.
  */
+
 public record UserRecord(
 
-) {}
+) {
+}

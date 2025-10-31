@@ -5,19 +5,19 @@
 package se.digg.crypto.opaque.protocol;
 
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.error.InvalidInputException;
 
 /**
- * Encoding data to a byte string using TLS syntax
+ * Encoding data to a byte string using TLS syntax.
  */
+
 public class TLSSyntaxEncoder {
 
   private byte[] data;
 
   public TLSSyntaxEncoder() {
-    this.data = new byte[]{};
+    this.data = new byte[] {};
   }
 
   public static TLSSyntaxEncoder getInstance() {
@@ -29,7 +29,8 @@ public class TLSSyntaxEncoder {
     return this;
   }
 
-  public TLSSyntaxEncoder addVariableLengthData(byte[] newData, int lengthBytes) throws InvalidInputException {
+  public TLSSyntaxEncoder addVariableLengthData(byte[] newData, int lengthBytes)
+      throws InvalidInputException {
     byte[] paddedLengthVal = OpaqueUtils.i2osp(newData.length, lengthBytes);
     addFixedLengthData(paddedLengthVal);
     addFixedLengthData(newData);

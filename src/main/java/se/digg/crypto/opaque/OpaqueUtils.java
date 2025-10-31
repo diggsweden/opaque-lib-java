@@ -18,13 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.client.CleartextCredentials;
 import se.digg.crypto.opaque.dto.CredentialResponse;
 import se.digg.crypto.opaque.dto.KE1;
@@ -35,16 +33,17 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxParser;
 import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 
 /**
- * Opaque Utility functions
+ * Opaque Utility functions.
  */
+
 public class OpaqueUtils {
 
   private static final Random RNG = new SecureRandom();
 
   /**
-   * Concatenate parts to a byte array
+   * Concatenate parts to a byte array.
    *
-   * @param parts each part must be a byte array or a UTF-8 encoded string
+   * @param parts each part must be a byte array or a UTF-8 encoded string.
    * @return concatenated byte array
    */
   public static byte[] concat(Object... parts) {
@@ -59,7 +58,8 @@ public class OpaqueUtils {
         continue;
       }
       if (o instanceof String) {
-        concatenatedData = Arrays.concatenate(concatenatedData, ((String) o).getBytes(StandardCharsets.UTF_8));
+        concatenatedData =
+            Arrays.concatenate(concatenatedData, ((String) o).getBytes(StandardCharsets.UTF_8));
         continue;
       }
       throw new IllegalArgumentException("Illegal data to concatenate: " + o);
@@ -93,7 +93,8 @@ public class OpaqueUtils {
     return xorArray;
   }
 
-  public static List<byte[]> split(byte[] concatenatedData, int index) throws InvalidInputException {
+  public static List<byte[]> split(byte[] concatenatedData, int index)
+      throws InvalidInputException {
     TLSSyntaxParser parser = new TLSSyntaxParser(concatenatedData);
     List<byte[]> byteArrayList = new ArrayList<>();
     byteArrayList.add(parser.extractFixedLength(index));
@@ -114,8 +115,8 @@ public class OpaqueUtils {
 
     if (paddedLengthVal.length < len) {
       // Pad up to expected size
-      for (int i = paddedLengthVal.length; i < len; i++ ) {
-        paddedLengthVal = Arrays.concatenate(new byte[]{0x00}, paddedLengthVal);
+      for (int i = paddedLengthVal.length; i < len; i++) {
+        paddedLengthVal = Arrays.concatenate(new byte[] {0x00}, paddedLengthVal);
       }
     }
     return paddedLengthVal;
@@ -123,51 +124,53 @@ public class OpaqueUtils {
 
   public static BigInteger os2ip(byte[] val) {
     // Make sure we get a positive value by adding 0x00 as leading byte in the value byte array
-    return new BigInteger(Arrays.concatenate(new byte[]{0x00}, val));
+    return new BigInteger(Arrays.concatenate(new byte[] {0x00}, val));
   }
 
   public static byte[] preamble(
-    byte[] clientIdentity, KE1 ke1, byte[] serverIdentity, CredentialResponse credentialResponse, byte[] serverNonce,
-    byte[] serverPublicKeyshare, byte[] context) throws InvalidInputException {
+      byte[] clientIdentity, KE1 ke1, byte[] serverIdentity, CredentialResponse credentialResponse,
+      byte[] serverNonce,
+      byte[] serverPublicKeyshare, byte[] context) throws InvalidInputException {
     return concat(
-      "OPAQUEv1-",
-      new TLSSyntaxEncoder()
-        .addVariableLengthData(context, 2)
-        .addVariableLengthData(clientIdentity, 2)
-        .addFixedLengthData(ke1.getEncoded())
-        .addVariableLengthData(serverIdentity, 2)
-        .addFixedLengthData(credentialResponse.getEncoded())
-        .addFixedLengthData(serverNonce)
-        .addFixedLengthData(serverPublicKeyshare)
-        .toBytes()
-    );
+        "OPAQUEv1-",
+        new TLSSyntaxEncoder()
+            .addVariableLengthData(context, 2)
+            .addVariableLengthData(clientIdentity, 2)
+            .addFixedLengthData(ke1.getEncoded())
+            .addVariableLengthData(serverIdentity, 2)
+            .addFixedLengthData(credentialResponse.getEncoded())
+            .addFixedLengthData(serverNonce)
+            .addFixedLengthData(serverPublicKeyshare)
+            .toBytes());
   }
 
   public static CleartextCredentials createCleartextCredentials(
-    byte[] serverPublicKey, byte[] clientPublicKey,
-    byte[] serverIdentity, byte[] clientIdentity
-  ) {
+      byte[] serverPublicKey, byte[] clientPublicKey,
+      byte[] serverIdentity, byte[] clientIdentity) {
     return new CleartextCredentials(
-      serverPublicKey,
-      serverIdentity != null ? serverIdentity : serverPublicKey,
-      clientIdentity != null ? clientIdentity : clientPublicKey
-    );
+        serverPublicKey,
+        serverIdentity != null ? serverIdentity : serverPublicKey,
+        clientIdentity != null ? clientIdentity : clientPublicKey);
   }
 
   public static KeyPair getKeyPair(KeyPairRecord keyPairRecord, ECParameterSpec parameterSpec)
-    throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, DeserializationException {
-    return new KeyPair(getPublicECKey(keyPairRecord.publicKey(), parameterSpec), getPrivateECKey(keyPairRecord.privateKey(), parameterSpec));
+      throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException,
+      DeserializationException {
+    return new KeyPair(getPublicECKey(keyPairRecord.publicKey(), parameterSpec),
+        getPrivateECKey(keyPairRecord.privateKey(), parameterSpec));
   }
 
   public static PrivateKey getPrivateECKey(byte[] privateKeyBytes, ECParameterSpec parameterSpec)
-    throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
-    ECPrivateKeySpec privateKeySpec = new ECPrivateKeySpec(new BigInteger(1, privateKeyBytes), parameterSpec);
+      throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
+    ECPrivateKeySpec privateKeySpec =
+        new ECPrivateKeySpec(new BigInteger(1, privateKeyBytes), parameterSpec);
     KeyFactory keyFactory = KeyFactory.getInstance("EC", "BC");
     return keyFactory.generatePrivate(privateKeySpec);
   }
 
   public static PublicKey getPublicECKey(byte[] publicKeyBytes, ECParameterSpec parameterSpec)
-    throws DeserializationException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
+      throws DeserializationException, NoSuchAlgorithmException, NoSuchProviderException,
+      InvalidKeySpecException {
     ECPoint ecPointElement = parameterSpec.getCurve().decodePoint(publicKeyBytes);
     ECPublicKeySpec publicKeySpec = new ECPublicKeySpec(ecPointElement, parameterSpec);
     KeyFactory keyFactory = KeyFactory.getInstance("EC", "BC");

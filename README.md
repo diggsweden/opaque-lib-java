@@ -13,12 +13,13 @@ SPDX-License-Identifier: EUPL-1.2
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/diggsweden/opaque-lib-java/badge?style=for-the-badge)](https://scorecard.dev/viewer/?uri=github.com/diggsweden/opaque-lib-java)
 
-# 1. Usage
+## 1. Usage
 
 ## 1.1 Dependency
+
 Include this library in your project by including the following dependency:
 
-```
+```text
 <dependecny>
   <groupId>se.digg.crypto</groupId>
   <artifactId>opaque</artifactId>
@@ -39,7 +40,6 @@ These main components depend on the following common subcomponents
 | OprfFunctions          | Implements the OPRF (Oblivious Pseudo Random Function)                    |
 | KeyDerivationFunctions | Provides key derivation functions. This implementation implements HKDF    |
 
-
 ### 1.2.1 Stretch algorithm
 
 This implements the `se.digg.crypto.opaque.crypto.StretchAlgorithm` interface.
@@ -53,8 +53,6 @@ Argon can be instantiated either by a profile, or by custom Argon parameters.
 A null stretch implementation of Argon (stretch (x) = x) can be instantiated as follows:
 
 > StretchAlgorithm stretch = new ArgonStretch(ArgonStretch.ARGON_PROFILE_IDENTITY)
-
-
 
 ### 1.2.2 HashFunctions
 
@@ -74,7 +72,6 @@ Instantiation of an OprfFunctions object is demonstrated in the following exampl
 
 `context` is an optional arbitrary string for the context within which this OPRF is used.
 
-
 ### 1.2.4 KeyDerivationFunctions
 
 This implements the `se.digg.crypto.opaque.crypto.KeyDerivationFunctions` interface.
@@ -82,7 +79,6 @@ This implements the `se.digg.crypto.opaque.crypto.KeyDerivationFunctions` interf
 Instantiation of a KeyDerivationFunctions object is demonstrated in the following example:
 
 > KeyDerivationFunctions hkdf = new HKDFKeyDerivation(hashFunctions);
-
 
 ## 1.3 OPAQUE Client
 
@@ -95,7 +91,6 @@ Instantiation of an OpaqueClient object is demonstrated in the following example
 This interface provides functions to generate all client data needed to engage in the Opaque protocol exchange as well as
 all data that needs to be stored in as session data or static records.
 
-
 ### 1.4
 
 This implements the `se.digg.crypto.opaque.client.OpaqueServer` interface.
@@ -107,7 +102,7 @@ Instantiation of an OpaqueClient object is demonstrated in the following example
 This interface provides functions to generate all server data needed to engage in the Opaque protocol exchange as well as
 all data that needs to be stored in as session data or static records.
 
-# 2. HSM support
+## 2. HSM support
 
 This implementation supports extending the ORF function with an additional Diffie-Hellman operation by the server private key.
 This allows an HSM-based private key to be part of protection of all password records to protect them against off-line attacks
@@ -132,7 +127,7 @@ and `ks` is an optional static server private key that may be maintained in an H
 
 An HSM enabled OPAQUE client and server are instantiated in the following example:
 
-```
+```text
 StretchAlgorithm stretch = new ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT)
 HashFunctions hashFunctions = new HashFunctions(new SHA512Digest(), stretch);
 HSMEnabledOprfFunction oprf = new HSMEnabledOprfFunction(
@@ -151,7 +146,10 @@ OPRF server evaluation requires performing a scalar multiplication (`be * ks`) w
 - `be` is the blinded element received from the client
 - `ks` is the server’s private key stored in the HSM
 
-However, when using PKCS#11 with an HSM-protected private key, there's a limitation: a Diffie-Hellman (DH) operation returns only the X-coordinate of the resulting point (i.e., the shared secret). This means we do not know the Y-coordinate of the resulting point. For a given X on the curve, there are two valid Y values (one even and one odd). The workaround described below determines the correct Y value using only DH operations, without extracting the private key.
+However, when using PKCS#11 with an HSM-protected private key, there's a limitation: a Diffie-Hellman (DH) operation returns only the
+X-coordinate of the resulting point (i.e., the shared secret). This means we do not know the Y-coordinate of the resulting point. For a
+given X on the curve, there are two valid Y values (one even and one odd). The workaround described below determines the correct Y value
+using only DH operations, without extracting the private key.
 
 ### Workaround
 
@@ -165,35 +163,35 @@ To recover the correct Y-coordinate, we use the compressed point serialization f
 The basic idea is to:
 
 1. Perform two DH operations with the server key:
-    - `X₁ = DH(be, ks)` → returns the X coordinate only
-    - `X₂ = DH(be + G, ks)` → returns the X coordinate only  
+   - `X₁ = DH(be, ks)` → returns the X coordinate only
+   - `X₂ = DH(be + G, ks)` → returns the X coordinate only  
       *(where `G` is the curve’s base point)*
 
 2. Construct the two possible points from `X₁`:
-    - `Pe = decompress(0x02 || X₁)` → candidate with even Y
-    - `Po = decompress(0x03 || X₁)` → candidate with odd Y
+   - `Pe = decompress(0x02 || X₁)` → candidate with even Y
+   - `Po = decompress(0x03 || X₁)` → candidate with odd Y
 
 3. Add each point to `be`:
-    - `R1 = Pe + be`
-    - `R2 = Po + be`
+   - `R1 = Pe + be`
+   - `R2 = Po + be`
 
 4. Compare the X-coordinate of the results with `X₂`:
-    - If `R1.X == X₂`, then Y is even
-    - If `R2.X == X₂`, then Y is odd
+   - If `R1.X == X₂`, then Y is even
+   - If `R2.X == X₂`, then Y is odd
 
-By determining which reconstructed point's X value matches the output of the second DH operation, we can identify the correct Y coordinate without needing to extract or directly observe it.
+By determining which reconstructed point's X value matches the output of the second DH operation, we can identify the correct
+Y coordinate without needing to extract or directly observe it.
 
 This workaround enables scalar multiplication with PKCS#11-based HSMs despite their limited point information.
 
-# 3. Protocol exchange
+## 3. Protocol exchange
 
 This section outlines the processing steps executed by the Opaque protocol
 
-**Parameters**
+### Parameters
 
 - `Cord` = Curve order = modulus used when creating a random scalar
 - `G` = Curve generator point
-
 
 **Functions:**
 
@@ -207,7 +205,7 @@ This section outlines the processing steps executed by the Opaque protocol
 
 RegistrationRequest = createRegistrationRequest(password(`pw`))
 
-```
+```text
 Scalar blind(b) = Random => {1, 2, … cord - 1}
 ECPoint blindedElement(be) = (G * H(pw)) * b
 ```
@@ -221,7 +219,7 @@ ECPoint blindedElement(be) = (G * H(pw)) * b
 
 **Process:**
 
-```
+```text
 RegistrationResponse = createRegistrationResponse(
 blindedElement, ServerPublicKey (Ks), CredentialIdentifier (ci), OPRF seed (ops))
 
@@ -241,7 +239,7 @@ ECPoint evaluatedElement(ee) = be * rs
 finalizeRegReq(password(`pw`), blind, EvalElm(`ee`), ServerPubKey (`Ks`),
 ServerId (`Is`), ClientID (`Ic`))
 
-```
+```text
 Scalar blindInverse(bi) = b modInverse (cord)  
 ECPoint unblindedElement(ue) = ee * bi  ==> (G * H(pw)) * rs
 finalizeHash(fh) = H(pw | (G * H(pw)) * rs | “Finalize”)
@@ -261,11 +259,10 @@ authTag = MAC{ak}(eNonce | cc)
 envelope = (eNonce, authTag)
 ```
 
-**Output**
+### Output
 
 - RegistrationRecord = (`Rc`, `mk`, `envelope`)
 - Save: (`evelope`, `Rc`, `mk`, `ek`)
-
 
 ### 3.2. Authentication phase
 
@@ -275,7 +272,7 @@ envelope = (eNonce, authTag)
 
 generateKe1(password(`pw`))
 
-```
+```text
 Scalar blind(ab) = Random => {1, 2, … cord - 1}
 ECPoint blindedElement(abe) = (G * H(pw)) * ab
 clientNonce(cNonce) = RNG(nonceSize)
@@ -292,10 +289,10 @@ clientKeyPair(xc, Xc) = deriveDHKeyPair(cSeed)
 
 **Process:**
 
-generateKe2(ServerIdentity (`Is`), ServerPrivateKey(`ks`), ServerPublicKey(`Ks`), RegistrationRecord(`Rc`, `mk`, `envelope`), CredentialIdentifier(`ci`), OPRF Seed (`ops`),
-KE1(`abe`, `cNonce`, `Xc`), ClientIdentity(`Ic`))
+generateKe2(ServerIdentity (`Is`), ServerPrivateKey(`ks`), ServerPublicKey(`Ks`), RegistrationRecord(`Rc`, `mk`, `envelope`),
+CredentialIdentifier(`ci`), OPRF Seed (`ops`), KE1(`abe`, `cNonce`, `Xc`), ClientIdentity(`Ic`))
 
-```
+```text
 seed = HKDF expand(ops, ci+”OprfKey”)
 (rs, Rs) = deriveKey(seed, "OPAQUE-DeriveKeyPair")
 ECPoint evaluatedElement(aee) = abe * rs
@@ -321,7 +318,6 @@ serverMac = Mac(km2, H(pa))
 authRespse (ar) = (sNonce, Xs, serverMac)
 ```
 
-
 **Output:**
 
 - KE2 = (`cr`, `ar`)  ==> ((`aee`, `mNonce`, `mr`),(`sNonce`, `Xs`, `serverMac`))
@@ -332,7 +328,7 @@ authRespse (ar) = (sNonce, Xs, serverMac)
 
 generateKe3(ClientIdentity(`Ic`), ServerIdentity(`Is`), KE2((`aee`, `mNonce`, `mr`),(`sNonce`, `Xs`, `serverMac`))
 
-```
+```text
 Scalar blindInverse(abi) = ab modInverse (cord)  
 ECPoint unblindedElement(aue) = aee * bai ==> (G * H(pw)) * rs
 finalizeHash(fh) = H(pw | (G * H(pw)) * rs | “Finalize”)

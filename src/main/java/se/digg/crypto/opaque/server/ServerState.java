@@ -9,8 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Server state data
+ * Server state data.
  */
+
 @Data
 @AllArgsConstructor
 @Builder

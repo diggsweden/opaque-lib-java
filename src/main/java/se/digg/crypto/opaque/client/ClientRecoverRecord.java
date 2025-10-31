@@ -7,11 +7,11 @@ package se.digg.crypto.opaque.client;
 import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 
 /**
- * Client credential recovery record
+ * Client credential recovery record.
  */
+
 public record ClientRecoverRecord(
-  KeyPairRecord clientKeyPair,
-  CleartextCredentials cleartextCredentials,
-  byte[] exportKey
-) {
+    KeyPairRecord clientKeyPair,
+    CleartextCredentials cleartextCredentials,
+    byte[] exportKey) {
 }

@@ -10,8 +10,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Server AKE State
+ * Server AKE State.
  */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
