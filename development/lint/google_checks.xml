@@ -26,6 +26,9 @@ SPDX-License-Identifier: EUPL-1.2
     - MissingJavadocMethod and MissingJavadocType checks are suppressed
     - AbbreviationAsWordInName check is suppressed (OPRF protocol uses abbreviations like TLS, 
       OPRF, KE1/KE2/KE3, HKDF, EC, PK, DST which are standard in cryptographic protocols)
+    - JavadocParagraph check is suppressed (formatter-maven-plugin reformats <p> tags to be on 
+      their own line, which conflicts with checkstyle's requirement that <p> tags be immediately 
+      followed by text. Suppressing this rule to prevent the formatter from introducing violations)
  -->
 
 <module name="Checker">
@@ -334,9 +337,11 @@ SPDX-License-Identifier: EUPL-1.2
     <module name="SummaryJavadoc">
       <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
     </module>
+    <!-- Suppressed: formatter-maven-plugin formats <p> tags on their own line, conflicting with this rule
     <module name="JavadocParagraph">
       <property name="allowNewlineParagraph" value="false"/>
     </module>
+    -->
     <module name="RequireEmptyLineBeforeBlockTagGroup"/>
     <module name="AtclauseOrder">
       <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
