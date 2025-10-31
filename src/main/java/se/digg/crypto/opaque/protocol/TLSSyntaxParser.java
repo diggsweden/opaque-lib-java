@@ -16,7 +16,8 @@ import se.digg.crypto.opaque.error.InvalidInputException;
  */
 public class TLSSyntaxParser {
 
-  @Getter private byte[] data;
+  @Getter
+  private byte[] data;
 
   /**
    * Creates a syntax parser setup with data to be parsed
@@ -52,8 +53,8 @@ public class TLSSyntaxParser {
       throw new IllegalArgumentException("Length byte larger than 4 bytes is not allowed");
     }
     int extractLen = new BigInteger(
-      // Make sure that a positive value is collected by adding a leading 00 byte
-      Arrays.concatenate(new byte[]{0x00}, Arrays.copyOf(data, lengthParamBytes))).intValue();
+        // Make sure that a positive value is collected by adding a leading 00 byte
+        Arrays.concatenate(new byte[] {0x00}, Arrays.copyOf(data, lengthParamBytes))).intValue();
     data = reduceData(lengthParamBytes);
     return extractFixedLength(extractLen);
   }
@@ -64,8 +65,6 @@ public class TLSSyntaxParser {
     }
     return Arrays.copyOfRange(data, len, data.length);
   }
-
-
 
 
 

@@ -25,15 +25,16 @@ public class ArgonStretch implements StretchAlgorithm {
   /** Predefined Argon profiles */
   public static final Map<String, Argon2Parameters> predefinedProfile;
 
-  static{
+  static {
     predefinedProfile = new HashMap<>();
-    predefinedProfile.put(ARGON_PROFILE_DEFAULT, new Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
-      .withSalt(OpaqueUtils.zeroes(16))
-      .withParallelism(4)
-      .withMemoryAsKB(2^21)
-      .withIterations(1)
-      .withVersion(0x13)
-      .build());
+    predefinedProfile.put(ARGON_PROFILE_DEFAULT,
+        new Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
+            .withSalt(OpaqueUtils.zeroes(16))
+            .withParallelism(4)
+            .withMemoryAsKB(2 ^ 21)
+            .withIterations(1)
+            .withVersion(0x13)
+            .build());
     predefinedProfile.put(ARGON_PROFILE_IDENTITY, null);
   }
 
@@ -55,14 +56,15 @@ public class ArgonStretch implements StretchAlgorithm {
    * @param argonProfile
    */
   public ArgonStretch(String argonProfile) {
-    if (!predefinedProfile.containsKey(argonProfile)){
+    if (!predefinedProfile.containsKey(argonProfile)) {
       throw new IllegalArgumentException("Unsupported ARGON Profile");
     }
     parameters = predefinedProfile.get(argonProfile);
   }
 
   /** {@inheritDoc} */
-  @Override public byte[] stretch(byte[] message, int length) {
+  @Override
+  public byte[] stretch(byte[] message, int length) {
     if (parameters == null) {
       log.debug("Running in identity mode. Returning input");
       return message;

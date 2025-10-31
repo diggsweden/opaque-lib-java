@@ -47,7 +47,8 @@ public class DefaultOpaqueCurve implements OpaqueCurve {
   protected final int privateKeySerializationSize;
   protected final int publicKeySerializationSize;
 
-  public DefaultOpaqueCurve(ECParameterSpec parameterSpec, HashToCurveProfile hashToCurveProfile, DstContext dst) {
+  public DefaultOpaqueCurve(ECParameterSpec parameterSpec, HashToCurveProfile hashToCurveProfile,
+      DstContext dst) {
     this.parameterSpec = parameterSpec;
     this.publicKeySerializationSize = serializeElement(parameterSpec.getG()).length;
     int bitLen = parameterSpec.getCurve().getOrder().subtract(BigInteger.ONE).bitLength();
@@ -71,49 +72,61 @@ public class DefaultOpaqueCurve implements OpaqueCurve {
 
     CurveProcessor curveProcessor = new GenericCurveProcessor(spec);
     MessageExpansion messExp = new XmdMessageExpansion(digest, hashToCurveProfile.getK());
-    GenericHashToField hashToField = new GenericHashToField(dst.getHash2CurveDST(), spec, messExp, hashToCurveProfile.getL());
+    GenericHashToField hashToField =
+        new GenericHashToField(dst.getHash2CurveDST(), spec, messExp, hashToCurveProfile.getL());
     MapToCurve mapToCurve = new ShallueVanDeWoestijneMapToCurve(spec, hashToCurveProfile.getZ());
     this.h2c = new HashToEllipticCurve(hashToField, mapToCurve, curveProcessor);
-    this.hashToScalar = new GenericOPRFHashToScalar(parameterSpec, digest, hashToCurveProfile.getK());
+    this.hashToScalar =
+        new GenericOPRFHashToScalar(parameterSpec, digest, hashToCurveProfile.getK());
   }
 
-  @Override public ECParameterSpec getParameterSpec() {
+  @Override
+  public ECParameterSpec getParameterSpec() {
     return parameterSpec;
   }
 
-  @Override public BigInteger hashToScalar(byte[] seed) {
+  @Override
+  public BigInteger hashToScalar(byte[] seed) {
     return hashToScalar.process(seed, dst.getHash2ScalarDefaultDST());
   }
 
-  @Override public BigInteger hashToScalar(byte[] seed, String domain) {
+  @Override
+  public BigInteger hashToScalar(byte[] seed, String domain) {
     return hashToScalar.process(seed, dst.getDomainSeparationTag(domain));
   }
 
-  @Override public ECPoint hashToGroup(byte[] seed) {
+  @Override
+  public ECPoint hashToGroup(byte[] seed) {
     return h2c.hashToEllipticCurve(seed);
   }
 
-  @Override public BigInteger randomScalar() {
+  @Override
+  public BigInteger randomScalar() {
     return hashToScalar(OpaqueUtils.random(getScalarSize()));
   }
 
-  @Override public byte[] serializeElement(ECPoint ecPoint) {
+  @Override
+  public byte[] serializeElement(ECPoint ecPoint) {
     return ecPoint.getEncoded(true);
   }
 
-  @Override public int getElementSerializationSize() {
+  @Override
+  public int getElementSerializationSize() {
     return publicKeySerializationSize;
   }
 
-  @Override public ECPoint deserializeElement(byte[] elementBytes) {
+  @Override
+  public ECPoint deserializeElement(byte[] elementBytes) {
     return parameterSpec.getCurve().decodePoint(elementBytes);
   }
 
-  @Override public int getScalarSize() {
+  @Override
+  public int getScalarSize() {
     return privateKeySerializationSize;
   }
 
-  @Override public byte[] getSharedSecret(ECPoint point) {
+  @Override
+  public byte[] getSharedSecret(ECPoint point) {
     byte[] secret = serializeElement(point);
     return Arrays.copyOfRange(secret, 1, secret.length);
   }

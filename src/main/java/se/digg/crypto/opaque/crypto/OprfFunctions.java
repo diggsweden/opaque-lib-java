@@ -25,9 +25,9 @@ import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 public interface OprfFunctions {
 
   /**
-   * Create and output (blind, blinded_element),
-   * consisting of a blinded representation of an input element, denoted blinded_element,
-   * along with a value to revert the blinding process, denoted blind
+   * Create and output (blind, blinded_element), consisting of a blinded representation of an input
+   * element, denoted blinded_element, along with a value to revert the blinding process, denoted
+   * blind
    *
    * @param elementData
    * @return
@@ -36,8 +36,8 @@ public interface OprfFunctions {
   BlindedElement blind(byte[] elementData) throws DeriveKeyPairErrorException;
 
   /**
-   * Finalize the OPRF evaluation using input element, random inverter blind, and evaluation output evaluated_element,
-   * yielding output oprf_output.
+   * Finalize the OPRF evaluation using input element, random inverter blind, and evaluation output
+   * evaluated_element, yielding output oprf_output.
    *
    * @param elementData input element
    * @param blind blind element
@@ -47,12 +47,12 @@ public interface OprfFunctions {
    * @throws InvalidInputException invalid input error
    */
   byte[] finalize(byte[] elementData, byte[] blind, ECPoint evaluatedElement)
-    throws DeserializationException, InvalidInputException;
+      throws DeserializationException, InvalidInputException;
 
   /**
-   * Evaluate blinded input element blinded_element using input key k, yielding output element evaluated_element.
-   * This is equivalent to the BlindEvaluate function described in [OPRF], Section 3.3.1,
-   * where k is the private key parameter.
+   * Evaluate blinded input element blinded_element using input key k, yielding output element
+   * evaluated_element. This is equivalent to the BlindEvaluate function described in [OPRF],
+   * Section 3.3.1, where k is the private key parameter.
    *
    * @param k key
    * @param blindElement blind element
@@ -128,10 +128,11 @@ public interface OprfFunctions {
    * @throws DeserializationException error deserializing data
    */
   byte[] diffieHellman(OprfPrivateKey privateKey, byte[] publicKey)
-    throws DeserializationException, InvalidInputException;
+      throws DeserializationException, InvalidInputException;
 
   /**
    * Get the registered context for this OPRF function
+   *
    * @return context string as byte array
    */
   byte[] getContext();
@@ -147,15 +148,17 @@ public interface OprfFunctions {
    * @throws DeserializationException error converting key types
    */
   KeyPair getKeyPair(KeyPairRecord keyPairRecord)
-    throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, DeserializationException;
+      throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException,
+      DeserializationException;
 
   OpaqueCurve getCurve();
 
   PrivateKey getPrivateECKey(byte[] privateKeyBytes)
-    throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException;
+      throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException;
 
 
   PublicKey getPublicECKey(byte[] publicKeyBytes)
-    throws DeserializationException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException;
+      throws DeserializationException, NoSuchAlgorithmException, NoSuchProviderException,
+      InvalidKeySpecException;
 
-  }
+}

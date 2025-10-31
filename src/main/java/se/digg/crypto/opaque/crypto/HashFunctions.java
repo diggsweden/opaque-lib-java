@@ -32,8 +32,8 @@ public class HashFunctions {
 
   /**
    * Key stretching is done to help prevent password disclosure in the event of server compromise.
-   * Applying a key stretching function to the output of the OPRF greatly increases the cost of an offline attack upon
-   * the compromise of the credential file at the server.
+   * Applying a key stretching function to the output of the OPRF greatly increases the cost of an
+   * offline attack upon the compromise of the credential file at the server.
    *
    * @param message the data to stretch
    * @return stretched message
@@ -84,7 +84,7 @@ public class HashFunctions {
   public byte[] mac(byte[] key, byte[] message) {
     HMac hMac = new HMac(getDigestInstance());
     hMac.init(new KeyParameter(key));
-    hMac.update(message, 0 , message.length);
+    hMac.update(message, 0, message.length);
     byte[] hmacResult = new byte[getMacSize()];
     hMac.doFinal(hmacResult, 0);
     return hmacResult;

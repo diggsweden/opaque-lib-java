@@ -25,12 +25,18 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
 
   private final HashFunctions hashFunctions;
 
-  /** Size of extracted keying material. For HKDF this is always the size of the hash function used by HKDF */
-  @Setter private int extractSize;
+  /**
+   * Size of extracted keying material. For HKDF this is always the size of the hash function used
+   * by HKDF
+   */
+  @Setter
+  private int extractSize;
   /** Nonce size Nn. For Opaque this should always be 32 */
-  @Setter private int nonceSize;
+  @Setter
+  private int nonceSize;
   /** Seed size Nseed. For Opaque this should always be 32 */
-  @Setter private int seedSize;
+  @Setter
+  private int seedSize;
 
   /**
    * Constructor
@@ -43,20 +49,24 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
     this.nonceSize = 32;
     this.seedSize = 32;
   }
+
   /** {@inheritDoc} */
-  @Override public byte[] extract(byte[] salt, byte[] inputKeyingMaterial) {
+  @Override
+  public byte[] extract(byte[] salt, byte[] inputKeyingMaterial) {
     HKDFBytesGenerator hkdfGenerator = new HKDFBytesGenerator(hashFunctions.getDigestInstance());
     hkdfGenerator.init(HKDFParameters.defaultParameters(inputKeyingMaterial));
     return hkdfGenerator.extractPRK(salt, inputKeyingMaterial);
   }
 
   /** {@inheritDoc} */
-  @Override public byte[] expand(byte[] pseudoRandomKey, String info, int l) {
+  @Override
+  public byte[] expand(byte[] pseudoRandomKey, String info, int l) {
     return expand(pseudoRandomKey, info.getBytes(StandardCharsets.UTF_8), l);
   }
 
   /** {@inheritDoc} */
-  @Override public byte[] expand(byte[] pseudoRandomKey, byte[] info, int l) {
+  @Override
+  public byte[] expand(byte[] pseudoRandomKey, byte[] info, int l) {
     HKDFBytesGenerator hkdfGenerator = new HKDFBytesGenerator(new SHA256Digest());
     hkdfGenerator.init(HKDFParameters.skipExtractParameters(pseudoRandomKey, info));
     byte[] expandedKey = new byte[l];
@@ -65,16 +75,17 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
   }
 
   /** {@inheritDoc} */
-  @Override public DerivedKeys deriveKeys(byte[] ikm, byte[] preamble) throws InvalidInputException {
+  @Override
+  public DerivedKeys deriveKeys(byte[] ikm, byte[] preamble) throws InvalidInputException {
     byte[] prk = extract(null, ikm);
     int len = getExtractSize();
 
     byte[] handshakeSecret = expand(
-      prk, getCustomLabel("HandshakeSecret", hashFunctions.hash(preamble), len), len);
+        prk, getCustomLabel("HandshakeSecret", hashFunctions.hash(preamble), len), len);
     byte[] sessionKey = expand(
-      prk, getCustomLabel("SessionKey", hashFunctions.hash(preamble), len), len);
-    byte[] km2 = expand(handshakeSecret, getCustomLabel("ServerMAC", new byte[]{}, len), len);
-    byte[] km3 = expand(handshakeSecret, getCustomLabel("ClientMAC", new byte[]{}, len), len);
+        prk, getCustomLabel("SessionKey", hashFunctions.hash(preamble), len), len);
+    byte[] km2 = expand(handshakeSecret, getCustomLabel("ServerMAC", new byte[] {}, len), len);
+    byte[] km3 = expand(handshakeSecret, getCustomLabel("ClientMAC", new byte[] {}, len), len);
 
     return new DerivedKeys(km2, km3, sessionKey);
   }
@@ -92,27 +103,31 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
    * @param context contextData
    * @return custom label
    */
-  private byte[] getCustomLabel(String label, byte[] context, int length) throws InvalidInputException {
+  private byte[] getCustomLabel(String label, byte[] context, int length)
+      throws InvalidInputException {
     byte[] labelBytes = ("OPAQUE-" + label).getBytes(StandardCharsets.UTF_8);
     return TLSSyntaxEncoder.getInstance()
-      .addFixedLengthData(OpaqueUtils.i2osp(length, 2))
-      .addVariableLengthData(labelBytes, 1)
-      .addVariableLengthData(context, 1)
-      .toBytes();
+        .addFixedLengthData(OpaqueUtils.i2osp(length, 2))
+        .addVariableLengthData(labelBytes, 1)
+        .addVariableLengthData(context, 1)
+        .toBytes();
   }
 
   /** {@inheritDoc} */
-  @Override public int getExtractSize() {
+  @Override
+  public int getExtractSize() {
     return this.extractSize;
   }
 
   /** {@inheritDoc} */
-  @Override public int getNonceSize() {
+  @Override
+  public int getNonceSize() {
     return this.nonceSize;
   }
 
   /** {@inheritDoc} */
-  @Override public int getSeedSize() {
+  @Override
+  public int getSeedSize() {
     return seedSize;
   }
 

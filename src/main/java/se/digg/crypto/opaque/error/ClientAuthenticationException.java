@@ -11,7 +11,8 @@ import java.io.Serial;
  */
 public class ClientAuthenticationException extends Exception {
 
-  @Serial private static final long serialVersionUID = 8080070838494889334L;
+  @Serial
+  private static final long serialVersionUID = 8080070838494889334L;
 
   /** {@inheritDoc} */
   public ClientAuthenticationException(String message) {

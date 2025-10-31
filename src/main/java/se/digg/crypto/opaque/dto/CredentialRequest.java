@@ -8,10 +8,9 @@ package se.digg.crypto.opaque.dto;
  * CredentialRequestRecord
  */
 public record CredentialRequest(
-  byte[] blindedMessage
-) {
+    byte[] blindedMessage) {
 
-  public static CredentialRequest fromBytes(byte[] blindedMessage){
+  public static CredentialRequest fromBytes(byte[] blindedMessage) {
     return new CredentialRequest(blindedMessage);
   }
 

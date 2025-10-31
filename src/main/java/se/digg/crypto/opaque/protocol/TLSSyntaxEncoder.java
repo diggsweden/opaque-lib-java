@@ -17,7 +17,7 @@ public class TLSSyntaxEncoder {
   private byte[] data;
 
   public TLSSyntaxEncoder() {
-    this.data = new byte[]{};
+    this.data = new byte[] {};
   }
 
   public static TLSSyntaxEncoder getInstance() {
@@ -29,7 +29,8 @@ public class TLSSyntaxEncoder {
     return this;
   }
 
-  public TLSSyntaxEncoder addVariableLengthData(byte[] newData, int lengthBytes) throws InvalidInputException {
+  public TLSSyntaxEncoder addVariableLengthData(byte[] newData, int lengthBytes)
+      throws InvalidInputException {
     byte[] paddedLengthVal = OpaqueUtils.i2osp(newData.length, lengthBytes);
     addFixedLengthData(paddedLengthVal);
     addFixedLengthData(newData);

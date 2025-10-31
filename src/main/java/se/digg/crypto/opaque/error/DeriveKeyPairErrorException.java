@@ -9,8 +9,9 @@ import java.io.Serial;
 /**
  * Derive key pair error exception
  */
-public class DeriveKeyPairErrorException extends Exception{
-  @Serial private static final long serialVersionUID = -3914184956788230653L;
+public class DeriveKeyPairErrorException extends Exception {
+  @Serial
+  private static final long serialVersionUID = -3914184956788230653L;
 
   /** {@inheritDoc} */
   public DeriveKeyPairErrorException(String message) {

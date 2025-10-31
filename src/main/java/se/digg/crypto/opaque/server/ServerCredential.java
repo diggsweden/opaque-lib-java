@@ -10,10 +10,9 @@ import java.security.KeyPair;
  * Server credential record
  */
 public record ServerCredential(
-  KeyPair keyPair
-) {
+    KeyPair keyPair) {
 
-  public int getPkSize(){
+  public int getPkSize() {
     return 0;
   }
 

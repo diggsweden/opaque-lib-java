@@ -94,34 +94,39 @@ public class TestVectorTests {
   void opaqueCurveTest() throws Exception {
     log.info("Testing P-256");
     testOpaqueCurve(new DefaultOpaqueCurve(
-      ECNamedCurveTable.getParameterSpec("P-256"),
-      HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_,
-      new DstContext(DstContext.IDENTIFIER_P256_SHA256)));
+        ECNamedCurveTable.getParameterSpec("P-256"),
+        HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_,
+        new DstContext(DstContext.IDENTIFIER_P256_SHA256)));
     log.info("Testing P-384");
     testOpaqueCurve(new DefaultOpaqueCurve(
-      ECNamedCurveTable.getParameterSpec("P-384"),
-      HashToCurveProfile.P384_XMD_SHA_384_SSWU_RO_,
-      new DstContext(DstContext.IDENTIFIER_P384_SHA384)));
+        ECNamedCurveTable.getParameterSpec("P-384"),
+        HashToCurveProfile.P384_XMD_SHA_384_SSWU_RO_,
+        new DstContext(DstContext.IDENTIFIER_P384_SHA384)));
     log.info("Testing P-521");
     testOpaqueCurve(new DefaultOpaqueCurve(
-      ECNamedCurveTable.getParameterSpec("P-521"),
-      HashToCurveProfile.P521_XMD_SHA_512_SSWU_RO_,
-      new DstContext(DstContext.IDENTIFIER_P521_SHA512)));
+        ECNamedCurveTable.getParameterSpec("P-521"),
+        HashToCurveProfile.P521_XMD_SHA_512_SSWU_RO_,
+        new DstContext(DstContext.IDENTIFIER_P521_SHA512)));
   }
+
   void testOpaqueCurve(OpaqueCurve opaqueCurve) throws Exception {
 
-    log.info("Hash2Curve :'' -> {}", Hex.toHexString(opaqueCurve.hashToGroup("".getBytes()).getEncoded(true)));
-    log.info("Hash2Curve :'Test' -> {}", Hex.toHexString(opaqueCurve.hashToGroup("Test".getBytes()).getEncoded(true)));
-    log.info("Hash2Curve :'Domain' -> {}", Hex.toHexString(opaqueCurve.hashToGroup("Domain".getBytes()).getEncoded(true)));
+    log.info("Hash2Curve :'' -> {}",
+        Hex.toHexString(opaqueCurve.hashToGroup("".getBytes()).getEncoded(true)));
+    log.info("Hash2Curve :'Test' -> {}",
+        Hex.toHexString(opaqueCurve.hashToGroup("Test".getBytes()).getEncoded(true)));
+    log.info("Hash2Curve :'Domain' -> {}",
+        Hex.toHexString(opaqueCurve.hashToGroup("Domain".getBytes()).getEncoded(true)));
 
     log.info("Hash2Scalar :'' -> {}", opaqueCurve.hashToScalar("".getBytes()).toString(16));
     log.info("Hash2Scalar :'Test' -> {}", opaqueCurve.hashToScalar("Test".getBytes()).toString(16));
-    log.info("Hash2Scalar (Domain dst) :'Domain' -> {}", opaqueCurve.hashToScalar("Domain".getBytes(), "Domain").toString(16));
+    log.info("Hash2Scalar (Domain dst) :'Domain' -> {}",
+        opaqueCurve.hashToScalar("Domain".getBytes(), "Domain").toString(16));
   }
 
   @Test
-  void testVectorTests() throws Exception{
-    List<Integer> testIndexList = List.of(4,5);
+  void testVectorTests() throws Exception {
+    List<Integer> testIndexList = List.of(4, 5);
     for (Integer index : testIndexList) {
       performTestVectorTest(index);
     }
@@ -130,40 +135,48 @@ public class TestVectorTests {
   void performTestVectorTest(int vectorIndex) throws Exception {
 
     OpaqueTestVectorData testVectors = opaqueTestVectors.get(vectorIndex);
-    log.info("TestVector 6 - P256-SHA256\n {}", TestData.jsonPrettyPrinter().writeValueAsString(testVectors));
+    log.info("TestVector 6 - P256-SHA256\n {}",
+        TestData.jsonPrettyPrinter().writeValueAsString(testVectors));
 
-    //ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256");
+    // ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256");
     StretchAlgorithm stretchAlgorithm = new ArgonStretch(ArgonStretch.ARGON_PROFILE_IDENTITY);
     HashFunctions hashFunctions = new HashFunctions(new SHA256Digest(), stretchAlgorithm);
-    OpaqueCurve opaqueCurve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"), HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_, new DstContext(DstContext.IDENTIFIER_P256_SHA256));
+    OpaqueCurve opaqueCurve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"),
+        HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_,
+        new DstContext(DstContext.IDENTIFIER_P256_SHA256));
     KeyDerivationFunctions keyDerivationFunctions = new HKDFKeyDerivation(hashFunctions);
     OprfFunctions oprf = new DefaultOprfFunction(opaqueCurve, hashFunctions, "OPAQUE-POC");
-    TestOpaqueClient opaqueClient = new TestOpaqueClient(oprf, keyDerivationFunctions, hashFunctions);
-    TestOpaqueServer opaqueServer = new TestOpaqueServer(oprf, keyDerivationFunctions, hashFunctions);
+    TestOpaqueClient opaqueClient =
+        new TestOpaqueClient(oprf, keyDerivationFunctions, hashFunctions);
+    TestOpaqueServer opaqueServer =
+        new TestOpaqueServer(oprf, keyDerivationFunctions, hashFunctions);
 
     // Setup test values
-    byte[] password = Optional.ofNullable(h(testVectors.getInputs().getPassword())).orElse(OpaqueUtils.random(8));
+    byte[] password =
+        Optional.ofNullable(h(testVectors.getInputs().getPassword())).orElse(OpaqueUtils.random(8));
 
     opaqueClient.setNextBlind(h(testVectors.getInputs().getBlindRegistration()));
 
-    RegistrationRequestResult registrationRequestResult = opaqueClient.createRegistrationRequest(password);
+    RegistrationRequestResult registrationRequestResult =
+        opaqueClient.createRegistrationRequest(password);
 
     RegistrationResponse testRegistrationResponse = opaqueServer.createRegistrationResponse(
-      registrationRequestResult.registrationRequest().getEncoded(),
-      h(testVectors.getInputs().getServerPublicKey()),
-      h(testVectors.getInputs().getCredentialIdentifier()),
-      h(testVectors.getInputs().getOprfSeed()));
+        registrationRequestResult.registrationRequest().getEncoded(),
+        h(testVectors.getInputs().getServerPublicKey()),
+        h(testVectors.getInputs().getCredentialIdentifier()),
+        h(testVectors.getInputs().getOprfSeed()));
 
     // Inject envelopeNonce in test client
     opaqueClient.setNextEnvelopeNonce(
-      h(testVectors.getInputs().getEnvelopeNonce()));
+        h(testVectors.getInputs().getEnvelopeNonce()));
 
-    RegistrationFinalizationResult registrationFinalizationResult = opaqueClient.finalizeRegistrationRequest(
-      password,
-      registrationRequestResult.blind(),
-      testRegistrationResponse.getEncoded(),
-      h(testVectors.getInputs().getServerIdentity()),
-      h(testVectors.getInputs().getClientIdentity()));
+    RegistrationFinalizationResult registrationFinalizationResult =
+        opaqueClient.finalizeRegistrationRequest(
+            password,
+            registrationRequestResult.blind(),
+            testRegistrationResponse.getEncoded(),
+            h(testVectors.getInputs().getServerIdentity()),
+            h(testVectors.getInputs().getClientIdentity()));
 
     RegistrationRecord registrationRecord = registrationFinalizationResult.registrationRecord();
     Envelope envelope = registrationRecord.envelope();
@@ -171,10 +184,12 @@ public class TestVectorTests {
     log.info(TU.hex("Envelope nonce", envelope.nonce()));
     log.info(TU.hex("Auth tag", envelope.authTag()));
     log.info(TU.hex("Export key", registrationFinalizationResult.exportKey()));
-    log.info(TU.hex("Registration upload", registrationFinalizationResult.registrationRecord().getEncoded()));
+    log.info(TU.hex("Registration upload",
+        registrationFinalizationResult.registrationRecord().getEncoded()));
 
     if (h(testVectors.getOutputs().getRegistrationUpload()) != null) {
-      assertArrayEquals(h(testVectors.getOutputs().getRegistrationUpload()), registrationFinalizationResult.registrationRecord().getEncoded());
+      assertArrayEquals(h(testVectors.getOutputs().getRegistrationUpload()),
+          registrationFinalizationResult.registrationRecord().getEncoded());
     }
 
 
@@ -185,9 +200,8 @@ public class TestVectorTests {
     opaqueClient.setNextClientNonce(h(testVectors.getInputs().getClientNonce()));
     opaqueClient.setNextClientKeyshareSeed(h(testVectors.getInputs().getClientKeyshareSeed()));
     KE1 ke1 = opaqueClient.generateKe1(
-      password,
-      clientState
-    );
+        password,
+        clientState);
     log.info(TU.hex("KE1", ke1.getEncoded()));
     if (h(testVectors.getOutputs().getKe1()) != null) {
       assertArrayEquals(h(testVectors.getOutputs().getKe1()), ke1.getEncoded());
@@ -195,19 +209,19 @@ public class TestVectorTests {
 
     // Prepare for ke2
     ServerState serverState = new ServerState();
-    OprfPrivateKey serverPrivateKey = new OprfPrivateKey(h(testVectors.getInputs().getServerPrivateKey()));
+    OprfPrivateKey serverPrivateKey =
+        new OprfPrivateKey(h(testVectors.getInputs().getServerPrivateKey()));
     opaqueServer.setNextServerNonce(h(testVectors.getInputs().getServerNonce()));
     opaqueServer.setNextMaskingNonce(h(testVectors.getInputs().getMaskingNonce()));
     opaqueServer.setNextServerKeyShareSeed(h(testVectors.getInputs().getServerKeyshareSeed()));
 
     KE2 ke2 = opaqueServer.generateKe2(
-      h(testVectors.getInputs().getServerIdentity()), serverPrivateKey,
-      h(testVectors.getInputs().getServerPublicKey()),
-      registrationRecord.getEncoded(),
-      h(testVectors.getInputs().getCredentialIdentifier()),
-      h(testVectors.getInputs().getOprfSeed()), ke1.getEncoded(),
-      h(testVectors.getInputs().getClientIdentity()), serverState
-    );
+        h(testVectors.getInputs().getServerIdentity()), serverPrivateKey,
+        h(testVectors.getInputs().getServerPublicKey()),
+        registrationRecord.getEncoded(),
+        h(testVectors.getInputs().getCredentialIdentifier()),
+        h(testVectors.getInputs().getOprfSeed()), ke1.getEncoded(),
+        h(testVectors.getInputs().getClientIdentity()), serverState);
     log.info(TU.hex("KE2", ke2.getEncoded()));
     AuthResponse authResponse = ke2.authResponse();
     log.info(TU.hex("ServerPublicKeyShare", authResponse.serverPublicKeyShare()));
@@ -216,14 +230,15 @@ public class TestVectorTests {
     log.info(TU.hex("Masked response", credentialResponse.maskedResponse()));
     log.info(TU.hex("Evaluated message", credentialResponse.evaluatedMessage()));
 
-    KE2 tvKe2 = KE2.fromBytes(h(testVectors.getOutputs().getKe2()), keyDerivationFunctions.getNonceSize(), hashFunctions.getMacSize(), opaqueCurve.getElementSerializationSize());
+    KE2 tvKe2 =
+        KE2.fromBytes(h(testVectors.getOutputs().getKe2()), keyDerivationFunctions.getNonceSize(),
+            hashFunctions.getMacSize(), opaqueCurve.getElementSerializationSize());
     assertArrayEquals(tvKe2.getEncoded(), ke2.getEncoded());
 
     ClientKeyExchangeResult clientKeyExchangeResult = opaqueClient.generateKe3(
-      h(testVectors.getInputs().getClientIdentity()),
-      h(testVectors.getInputs().getServerIdentity()),
-      ke2.getEncoded(), clientState
-    );
+        h(testVectors.getInputs().getClientIdentity()),
+        h(testVectors.getInputs().getServerIdentity()),
+        ke2.getEncoded(), clientState);
     KE3 ke3 = clientKeyExchangeResult.ke3();
     log.info(TU.hex("KE3 (client mac)", ke3.getEncoded()));
     log.info(TU.hex("Session key", clientKeyExchangeResult.sessionKey()));
@@ -231,15 +246,17 @@ public class TestVectorTests {
 
     if (testVectors.getOutputs().getKe3() != null) {
       assertArrayEquals(h(testVectors.getOutputs().getKe3()), ke3.getEncoded());
-      assertArrayEquals(h(testVectors.getOutputs().getSessionKey()), clientKeyExchangeResult.sessionKey());
-      assertArrayEquals(h(testVectors.getOutputs().getExportKey()), clientKeyExchangeResult.exportKey());
+      assertArrayEquals(h(testVectors.getOutputs().getSessionKey()),
+          clientKeyExchangeResult.sessionKey());
+      assertArrayEquals(h(testVectors.getOutputs().getExportKey()),
+          clientKeyExchangeResult.exportKey());
     }
 
 
     log.info("Test vectors match");
   }
 
-  public static byte[] h(String hexString){
+  public static byte[] h(String hexString) {
     if (hexString == null) {
       return null;
     }
@@ -251,20 +268,24 @@ public class TestVectorTests {
 
 
     OPRFTestVectorData p256VectorMode0 = oprfTestVectorData.get(6);
-    log.info("TestVector - P256-SHA256 - Mode 0\n {}", TestData.jsonPrettyPrinter().writeValueAsString(p256VectorMode0));
+    log.info("TestVector - P256-SHA256 - Mode 0\n {}",
+        TestData.jsonPrettyPrinter().writeValueAsString(p256VectorMode0));
 
     DstContext dstContext = new DstContext(DstContext.IDENTIFIER_P256_SHA256);
     log.info("Context-String: {}", new String(dstContext.getContextString()));
     log.info("Hash-to-group dst: {}", new String(dstContext.getHash2CurveDST()));
-    log.info("Key derivation dst: {}", new String(dstContext.getDomainSeparationTag("DeriveKeyPair")));
+    log.info("Key derivation dst: {}",
+        new String(dstContext.getDomainSeparationTag("DeriveKeyPair")));
 
-    //ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256");
+    // ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256");
     StretchAlgorithm stretchAlgorithm = new ArgonStretch(ArgonStretch.ARGON_PROFILE_IDENTITY);
     HashFunctions hashFunctions = new HashFunctions(new SHA256Digest(), stretchAlgorithm);
-    OpaqueCurve opaqueCurve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"), HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_, new DstContext(DstContext.IDENTIFIER_P256_SHA256));
+    OpaqueCurve opaqueCurve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"),
+        HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_,
+        new DstContext(DstContext.IDENTIFIER_P256_SHA256));
     OprfFunctions oprf = new DefaultOprfFunction(opaqueCurve, hashFunctions, "Demo");
 
-    //Batch 1
+    // Batch 1
     OPRFTestVectorData.OPRFTestVectors b1v = p256VectorMode0.getVectors().get(0);
     // Generate blind
     ECPoint pwPoint = opaqueCurve.hashToGroup(Hex.decode(b1v.getInput()));
@@ -283,13 +304,15 @@ public class TestVectorTests {
   }
 
 
-  @Setter public static class TestOpaqueServer extends DefaultOpaqueServer {
+  @Setter
+  public static class TestOpaqueServer extends DefaultOpaqueServer {
 
     byte[] nextMaskingNonce;
     byte[] nextServerNonce;
     byte[] nextServerKeyShareSeed;
 
-    public TestOpaqueServer(OprfFunctions oprf, KeyDerivationFunctions keyDerivation, HashFunctions hashFunctions) {
+    public TestOpaqueServer(OprfFunctions oprf, KeyDerivationFunctions keyDerivation,
+        HashFunctions hashFunctions) {
       super(oprf, keyDerivation, hashFunctions);
     }
 
@@ -302,6 +325,7 @@ public class TestVectorTests {
         return OpaqueUtils.random(keyDerivation.getNonceSize());
       }
     }
+
     byte[] getServerNonce() {
       if (nextServerNonce != null) {
         byte[] returnValue = Arrays.clone(nextServerNonce);
@@ -311,6 +335,7 @@ public class TestVectorTests {
         return OpaqueUtils.random(keyDerivation.getNonceSize());
       }
     }
+
     byte[] getServerKeyShareSeed() {
       if (nextServerKeyShareSeed != null) {
         byte[] returnValue = Arrays.clone(nextServerKeyShareSeed);
@@ -324,41 +349,49 @@ public class TestVectorTests {
 
 
     @Override
-    protected CredentialResponse createCredentialResponse(CredentialRequest request, byte[] serverPublicKey,
-      RegistrationRecord record, byte[] credentialIdentifier, byte[] oprfSeed)
-      throws DeriveKeyPairErrorException, DeserializationException, InvalidInputException {
+    protected CredentialResponse createCredentialResponse(CredentialRequest request,
+        byte[] serverPublicKey,
+        RegistrationRecord record, byte[] credentialIdentifier, byte[] oprfSeed)
+        throws DeriveKeyPairErrorException, DeserializationException, InvalidInputException {
 
-      byte[] evaluatedMessage = getEvaluateMessage(request.blindedMessage(), oprfSeed, credentialIdentifier);
+      byte[] evaluatedMessage =
+          getEvaluateMessage(request.blindedMessage(), oprfSeed, credentialIdentifier);
       byte[] maskingNonce = getMaskingNonce();
       byte[] credentialResponsePad = keyDerivation.expand(record.maskingKey(),
-        OpaqueUtils.concat(maskingNonce, "CredentialResponsePad"),
-        keyDerivation.getNonceSize() + hashFunctions.getMacSize() + serverPublicKey.length);
-      byte[] maskedResponse = OpaqueUtils.xor(credentialResponsePad, OpaqueUtils.concat(serverPublicKey, record.envelope().getEncoded()));
+          OpaqueUtils.concat(maskingNonce, "CredentialResponsePad"),
+          keyDerivation.getNonceSize() + hashFunctions.getMacSize() + serverPublicKey.length);
+      byte[] maskedResponse = OpaqueUtils.xor(credentialResponsePad,
+          OpaqueUtils.concat(serverPublicKey, record.envelope().getEncoded()));
       return new CredentialResponse(evaluatedMessage, maskingNonce, maskedResponse);
     }
 
     @Override
-    protected AuthResponse authServerRespond(CleartextCredentials cleartextCredentials, OprfPrivateKey serverPrivateKey, byte[] clientPublicKey, KE1 ke1, CredentialResponse credentialResponse, ServerState state)
-      throws DeriveKeyPairErrorException, InvalidInputException, DeserializationException, NoSuchAlgorithmException,
-      InvalidKeySpecException, InvalidKeyException, NoSuchProviderException {
+    protected AuthResponse authServerRespond(CleartextCredentials cleartextCredentials,
+        OprfPrivateKey serverPrivateKey, byte[] clientPublicKey, KE1 ke1,
+        CredentialResponse credentialResponse, ServerState state)
+        throws DeriveKeyPairErrorException, InvalidInputException, DeserializationException,
+        NoSuchAlgorithmException,
+        InvalidKeySpecException, InvalidKeyException, NoSuchProviderException {
 
       byte[] serverNonce = getServerNonce();
       byte[] serverKeyShareSeed = getServerKeyShareSeed();
       KeyPairRecord keyPair = oprf.deriveDiffieHellmanKeyPair(serverKeyShareSeed);
 
       // Derive shared secrets
-      byte[] dh1 = oprf.diffieHellman(new OprfPrivateKey(keyPair.privateKey()), ke1.authRequest().clientPublicKey());
+      byte[] dh1 = oprf.diffieHellman(new OprfPrivateKey(keyPair.privateKey()),
+          ke1.authRequest().clientPublicKey());
       byte[] dh2 = oprf.diffieHellman(serverPrivateKey, ke1.authRequest().clientPublicKey());
       byte[] dh3 = oprf.diffieHellman(new OprfPrivateKey(keyPair.privateKey()), clientPublicKey);
       byte[] ikm = OpaqueUtils.concat(dh1, dh2, dh3);
 
       // Derive shared key
       byte[] preamble = OpaqueUtils.preamble(cleartextCredentials.clientIdentity(),
-        ke1, cleartextCredentials.serverIdentity(),
-        credentialResponse, serverNonce, keyPair.publicKey(), oprf.getContext());
+          ke1, cleartextCredentials.serverIdentity(),
+          credentialResponse, serverNonce, keyPair.publicKey(), oprf.getContext());
       DerivedKeys derivedKeys = keyDerivation.deriveKeys(ikm, preamble);
       byte[] serverMac = hashFunctions.mac(derivedKeys.km2(), hashFunctions.hash(preamble));
-      state.getAkeState().setExpectedClientMac(hashFunctions.mac(derivedKeys.km3(), hashFunctions.hash(OpaqueUtils.concat(preamble, serverMac))));
+      state.getAkeState().setExpectedClientMac(hashFunctions.mac(derivedKeys.km3(),
+          hashFunctions.hash(OpaqueUtils.concat(preamble, serverMac))));
       state.getAkeState().setSessionKey(derivedKeys.sessionKey());
       return new AuthResponse(serverNonce, keyPair.publicKey(), serverMac);
     }
@@ -366,40 +399,47 @@ public class TestVectorTests {
 
   }
 
-  @Setter public static class TestOpaqueClient extends DefaultOpaqueClient {
+  @Setter
+  public static class TestOpaqueClient extends DefaultOpaqueClient {
 
     byte[] nextEnvelopeNonce = null;
     byte[] nextBlind;
     byte[] nextClientNonce;
     byte[] nextClientKeyshareSeed;
 
-    public TestOpaqueClient(OprfFunctions oprf, KeyDerivationFunctions keyDerivation, HashFunctions hashFunctions) {
+    public TestOpaqueClient(OprfFunctions oprf, KeyDerivationFunctions keyDerivation,
+        HashFunctions hashFunctions) {
       super(oprf, keyDerivation, hashFunctions);
     }
 
     @Override
-    protected ClientStoreRecord store(byte[] randomizedPassword, byte[] serverPublicKey, byte[] serverIdentity,
-      byte[] clientIdentity) throws DeriveKeyPairErrorException, InvalidInputException {
+    protected ClientStoreRecord store(byte[] randomizedPassword, byte[] serverPublicKey,
+        byte[] serverIdentity,
+        byte[] clientIdentity) throws DeriveKeyPairErrorException, InvalidInputException {
       byte[] envelopeNonce = getEnvelopeNonce();
-      byte[] maskingKey = keyDerivation.expand(randomizedPassword, "MaskingKey", hashFunctions.getHashSize());
+      byte[] maskingKey =
+          keyDerivation.expand(randomizedPassword, "MaskingKey", hashFunctions.getHashSize());
       byte[] authKey = keyDerivation.expand(randomizedPassword,
-        OpaqueUtils.concat(envelopeNonce, "AuthKey"  ), hashFunctions.getHashSize());
+          OpaqueUtils.concat(envelopeNonce, "AuthKey"), hashFunctions.getHashSize());
       byte[] exportKey = keyDerivation.expand(randomizedPassword,
-        OpaqueUtils.concat(envelopeNonce, "ExportKey"), hashFunctions.getHashSize());
-      byte[] seed = keyDerivation.expand(randomizedPassword, OpaqueUtils.concat(envelopeNonce, "PrivateKey"),
-        keyDerivation.getSeedSize());
+          OpaqueUtils.concat(envelopeNonce, "ExportKey"), hashFunctions.getHashSize());
+      byte[] seed =
+          keyDerivation.expand(randomizedPassword, OpaqueUtils.concat(envelopeNonce, "PrivateKey"),
+              keyDerivation.getSeedSize());
       KeyPairRecord keyPair = oprf.deriveDiffieHellmanKeyPair(seed);
       byte[] clientPublicKey = keyPair.publicKey();
       CleartextCredentials cleartextCredentials = OpaqueUtils.createCleartextCredentials(
-        serverPublicKey, clientPublicKey, serverIdentity, clientIdentity);
+          serverPublicKey, clientPublicKey, serverIdentity, clientIdentity);
 
-      byte[] authTag = hashFunctions.mac(authKey, OpaqueUtils.concat(envelopeNonce, cleartextCredentials.serialize()));
+      byte[] authTag = hashFunctions.mac(authKey,
+          OpaqueUtils.concat(envelopeNonce, cleartextCredentials.serialize()));
       Envelope envelope = new Envelope(envelopeNonce, authTag);
       return new ClientStoreRecord(envelope, clientPublicKey, maskingKey, exportKey);
     }
 
-    @Override public RegistrationRequestResult createRegistrationRequest(byte[] password)
-      throws DeriveKeyPairErrorException {
+    @Override
+    public RegistrationRequestResult createRegistrationRequest(byte[] password)
+        throws DeriveKeyPairErrorException {
       BlindedElement blindData = blind(password, getBlind(), oprf.getCurve());
       byte[] blindedMessage = oprf.serializeElement(blindData.blindElement());
       RegistrationRequest request = new RegistrationRequest(blindedMessage);
@@ -407,7 +447,8 @@ public class TestVectorTests {
     }
 
     @Override
-    protected CredentialRequestData createCredentialRequest(byte[] password) throws DeriveKeyPairErrorException {
+    protected CredentialRequestData createCredentialRequest(byte[] password)
+        throws DeriveKeyPairErrorException {
       BlindedElement blindData = blind(password, getBlind(), oprf.getCurve());
       byte[] blindedMessage = oprf.serializeElement(blindData.blindElement());
       CredentialRequest credentialRequest = new CredentialRequest(blindedMessage);
@@ -421,7 +462,8 @@ public class TestVectorTests {
     }
 
 
-    protected KE1 authClientStart(CredentialRequest credentialRequest, ClientAkeState akeState) throws DeriveKeyPairErrorException {
+    protected KE1 authClientStart(CredentialRequest credentialRequest, ClientAkeState akeState)
+        throws DeriveKeyPairErrorException {
       byte[] clientNonce = getClientNonce();
       byte[] clientKeyshareSeed = getClientKeyshareSeed();
       KeyPairRecord keyPair = oprf.deriveDiffieHellmanKeyPair(clientKeyshareSeed);

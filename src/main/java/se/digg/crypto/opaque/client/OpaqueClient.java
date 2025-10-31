@@ -23,7 +23,8 @@ public interface OpaqueClient {
    * @return registration result
    * @throws DeriveKeyPairErrorException error deriving key pair
    */
-  RegistrationRequestResult createRegistrationRequest(byte[] password) throws DeriveKeyPairErrorException;
+  RegistrationRequestResult createRegistrationRequest(byte[] password)
+      throws DeriveKeyPairErrorException;
 
   /**
    * Client finalize registration request
@@ -33,20 +34,23 @@ public interface OpaqueClient {
    * @param registrationRespons registration response received from the server
    * @param serverIdentity server identity
    * @param clientIdentity client identity
-   * @return Registration finalization result containing data to store and data to return to the server
+   * @return Registration finalization result containing data to store and data to return to the
+   *         server
    * @throws DeserializationException error deserializing data
    * @throws DeriveKeyPairErrorException error deriving key paris
    * @throws InvalidInputException invalid inputs
    */
-  RegistrationFinalizationResult finalizeRegistrationRequest(byte[] password, byte[] blind, byte[] registrationRespons,
-    byte[] serverIdentity, byte[] clientIdentity)
-    throws DeserializationException, DeriveKeyPairErrorException, InvalidInputException;
+  RegistrationFinalizationResult finalizeRegistrationRequest(byte[] password, byte[] blind,
+      byte[] registrationRespons,
+      byte[] serverIdentity, byte[] clientIdentity)
+      throws DeserializationException, DeriveKeyPairErrorException, InvalidInputException;
 
   /**
    * Create the KE1 authentication exchange data
    *
    * @param password the user password
-   * @param clientState a new client state object that will be used to store client state information
+   * @param clientState a new client state object that will be used to store client state
+   *        information
    * @return KE1 data to send to the server
    * @throws DeriveKeyPairErrorException error deriving key paris
    */
@@ -66,8 +70,9 @@ public interface OpaqueClient {
    * @throws ServerAuthenticationException error authenticating the server
    * @throws InvalidInputException invalid input
    */
-  ClientKeyExchangeResult generateKe3(byte[] clientIdentity, byte[] serverIdentity, byte[] ke2, ClientState clientState)
-    throws EvelopeRecoveryException, DeriveKeyPairErrorException, DeserializationException,
-    ServerAuthenticationException, InvalidInputException;
+  ClientKeyExchangeResult generateKe3(byte[] clientIdentity, byte[] serverIdentity, byte[] ke2,
+      ClientState clientState)
+      throws EvelopeRecoveryException, DeriveKeyPairErrorException, DeserializationException,
+      ServerAuthenticationException, InvalidInputException;
 
 }

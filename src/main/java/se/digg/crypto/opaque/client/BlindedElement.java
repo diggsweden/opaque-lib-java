@@ -12,8 +12,8 @@ import org.bouncycastle.math.ec.ECPoint;
 
 public record BlindedElement(
 
-  /* Blind data (scalar) used to revert blinding of the blinded element */
-  byte[] blind,
-  /* Blinded element (EC point) */
-  ECPoint blindElement
-) {}
+    /* Blind data (scalar) used to revert blinding of the blinded element */
+    byte[] blind,
+    /* Blinded element (EC point) */
+    ECPoint blindElement) {
+}

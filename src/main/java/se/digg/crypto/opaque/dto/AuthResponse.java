@@ -13,22 +13,21 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxParser;
  * Auth response record
  */
 public record AuthResponse(
-  byte[] serverNonce,
-  byte[] serverPublicKeyShare,
-  byte[] serverMac
-) {
+    byte[] serverNonce,
+    byte[] serverPublicKeyShare,
+    byte[] serverMac) {
 
-  public static AuthResponse fromBytes(byte[] authResponseBytes, int nonceLength, int macLength) throws InvalidInputException {
+  public static AuthResponse fromBytes(byte[] authResponseBytes, int nonceLength, int macLength)
+      throws InvalidInputException {
 
     TLSSyntaxParser parser = new TLSSyntaxParser(authResponseBytes);
     return new AuthResponse(
-      parser.extractFixedLength(nonceLength),
-      parser.extractFixedLength(parser.getData().length - macLength),
-      parser.getData()
-    );
+        parser.extractFixedLength(nonceLength),
+        parser.extractFixedLength(parser.getData().length - macLength),
+        parser.getData());
   }
 
-  public byte[] getEncoded(){
+  public byte[] getEncoded() {
     return Arrays.concatenate(serverNonce, serverPublicKeyShare, serverMac);
   }
 

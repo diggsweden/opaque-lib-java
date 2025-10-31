@@ -9,4 +9,5 @@ package se.digg.crypto.opaque.server;
  */
 public record UserRecord(
 
-) {}
+) {
+}

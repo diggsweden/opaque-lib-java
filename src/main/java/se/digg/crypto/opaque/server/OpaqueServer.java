@@ -31,8 +31,9 @@ public interface OpaqueServer {
    * @throws DeriveKeyPairErrorException error deriving key pairs
    */
   RegistrationResponse createRegistrationResponse(byte[] registrationRequest,
-    byte[] serverPublicKey, byte[] credentialIdentifier, byte[] oprfSeed) throws DeserializationException,
-    DeriveKeyPairErrorException;
+      byte[] serverPublicKey, byte[] credentialIdentifier, byte[] oprfSeed)
+      throws DeserializationException,
+      DeriveKeyPairErrorException;
 
   /**
    * Generate KE2 data for the authentication flow
@@ -52,11 +53,13 @@ public interface OpaqueServer {
    * @throws InvalidInputException invalid input
    */
   KE2 generateKe2(byte[] serverIdentity, OprfPrivateKey serverPrivateKey, byte[] serverPublicKey,
-    byte[] registrationRecord, byte[] credentialIdentifier, byte[] oprfSeed, byte[] ke1, byte[] clientIdentity, ServerState state)
-    throws DeriveKeyPairErrorException, DeserializationException, InvalidInputException;
+      byte[] registrationRecord, byte[] credentialIdentifier, byte[] oprfSeed, byte[] ke1,
+      byte[] clientIdentity, ServerState state)
+      throws DeriveKeyPairErrorException, DeserializationException, InvalidInputException;
 
   /**
    * Perform server finished operation
+   *
    * @param ke3 the KE3 object received from the client
    * @param state state information
    * @return the client Mac as verification that login succeeded

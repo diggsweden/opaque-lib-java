@@ -13,7 +13,6 @@ import se.digg.crypto.opaque.dto.KE3;
  * @author Stefan Santesson (stefan@idsec.se)
  */
 public record AuthClientFinalizeResult(
-  KE3 ke3,
-  byte[] sessionKey
-) {
+    KE3 ke3,
+    byte[] sessionKey) {
 }

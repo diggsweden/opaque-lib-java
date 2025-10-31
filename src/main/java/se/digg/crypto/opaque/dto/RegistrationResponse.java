@@ -13,19 +13,18 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxParser;
  * Registration response record
  */
 public record RegistrationResponse(
-  /* A serialized OPRF group element */
-  byte[] evaluatedMessage,
-  /* The server's encoded public key that will be used for the online AKE stage. */
-  byte[] serverPublicKey
-) {
+    /* A serialized OPRF group element */
+    byte[] evaluatedMessage,
+    /* The server's encoded public key that will be used for the online AKE stage. */
+    byte[] serverPublicKey) {
 
-  public static RegistrationResponse fromBytes(byte[] registrationResponseBytes, int elementSerializationSize)
-    throws InvalidInputException {
+  public static RegistrationResponse fromBytes(byte[] registrationResponseBytes,
+      int elementSerializationSize)
+      throws InvalidInputException {
     TLSSyntaxParser parser = new TLSSyntaxParser(registrationResponseBytes);
     return new RegistrationResponse(
-      parser.extractFixedLength(elementSerializationSize),
-      parser.getData()
-    );
+        parser.extractFixedLength(elementSerializationSize),
+        parser.getData());
   }
 
   public byte[] getEncoded() {

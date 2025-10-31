@@ -39,8 +39,15 @@ public class SimplifiedOpaqueCurveTest {
     if (Security.getProvider("BC") == null) {
       Security.addProvider(new BouncyCastleProvider());
     }
-    HashFunctions hashFunctions = new HashFunctions(new SHA256Digest(), new ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT)); // provide a proper HashFunctions instance
-    ECParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256"); // provide a proper ECParameterSpec instance
+    HashFunctions hashFunctions =
+        new HashFunctions(new SHA256Digest(), new ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT)); // provide
+                                                                                                     // a
+                                                                                                     // proper
+                                                                                                     // HashFunctions
+                                                                                                     // instance
+    ECParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec("P-256"); // provide a proper
+                                                                                 // ECParameterSpec
+                                                                                 // instance
 
     curve = new SimplifiedOpaqueCurve(parameterSpec, hashFunctions);
     curveFast = new SimplifiedOpaqueCurve(parameterSpec, hashFunctions, 16);
@@ -53,7 +60,7 @@ public class SimplifiedOpaqueCurveTest {
 
     // Define parameters
 
-    for (int i = 0 ; i<50 ; i ++) {
+    for (int i = 0; i < 50; i++) {
       String password = "sdflkj098234sdf-" + i;
       try {
         long startTime = System.nanoTime();
@@ -70,7 +77,7 @@ public class SimplifiedOpaqueCurveTest {
 
   @Test
   void testTiming() throws Exception {
-    
+
 
     // Checking distribution of bad and good points:
     performHashToGroupTest("sdflkj098234sdf-1", curveWithLogging);
@@ -85,6 +92,7 @@ public class SimplifiedOpaqueCurveTest {
     performTimingTest("sdflkj098234sdf-38", 300, curve, false);
 
   }
+
   @Test
   void testTimingFastCurve() throws Exception {
 
@@ -115,7 +123,8 @@ public class SimplifiedOpaqueCurveTest {
     assertEquals(result, result2);
   }
 
-  public long performTimingTest(String password, int iterations, SimplifiedOpaqueCurve curve, boolean scilent) {
+  public long performTimingTest(String password, int iterations, SimplifiedOpaqueCurve curve,
+      boolean scilent) {
     long startTime = System.nanoTime();
     List<Long> times = new ArrayList<>();
     long individualLow = 0;
@@ -132,15 +141,17 @@ public class SimplifiedOpaqueCurveTest {
     individualLow = times.get(3);
     individualHigh = times.get(times.size() - 4);
     if (!scilent) {
-      log.info("Time taken for hashToGroup for {}: {} ms - using {} itearations", password, (endTime - startTime)/1000000, iterations);
+      log.info("Time taken for hashToGroup for {}: {} ms - using {} itearations", password,
+          (endTime - startTime) / 1000000, iterations);
       log.info("Min time per operation: {} ns", individualLow);
       log.info("Max time per operation: {} ns", individualHigh);
-      log.info("Mean time per operation: {} ns", (endTime - startTime)/iterations);
+      log.info("Mean time per operation: {} ns", (endTime - startTime) / iterations);
     }
     return endTime - startTime;
   }
 
-  public void performHashToGroupTest(String password, SimplifiedOpaqueCurve curve) throws Exception {
+  public void performHashToGroupTest(String password, SimplifiedOpaqueCurve curve)
+      throws Exception {
 
     log.info("Testing password: {}", password);
     ECPoint result = curve.hashToGroup(password.getBytes(StandardCharsets.UTF_8));
@@ -150,10 +161,7 @@ public class SimplifiedOpaqueCurveTest {
 
 
 
-
-
   }
-
 
 
 

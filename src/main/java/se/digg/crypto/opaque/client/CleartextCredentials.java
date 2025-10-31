@@ -11,15 +11,14 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxEncoder;
  * Cleartext credentials record
  */
 public record CleartextCredentials(
-  byte[] serverPublicKey,
-  byte[] serverIdentity,
-  byte[] clientIdentity
-) {
+    byte[] serverPublicKey,
+    byte[] serverIdentity,
+    byte[] clientIdentity) {
   public byte[] serialize() throws InvalidInputException {
     return TLSSyntaxEncoder.getInstance()
-      .addFixedLengthData(serverPublicKey)
-      .addVariableLengthData(serverIdentity, 2)
-      .addVariableLengthData(clientIdentity, 2)
-      .toBytes();
+        .addFixedLengthData(serverPublicKey)
+        .addVariableLengthData(serverIdentity, 2)
+        .addVariableLengthData(clientIdentity, 2)
+        .toBytes();
   }
 }

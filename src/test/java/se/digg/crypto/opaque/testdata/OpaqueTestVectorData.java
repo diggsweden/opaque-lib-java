@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
-Test vector data in Json
+ * Test vector data in Json
  */
 @Data
 @NoArgsConstructor
@@ -28,7 +28,7 @@ public class OpaqueTestVectorData {
   @Data
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Config{
+  public static class Config {
 
     @JsonProperty("Group")
     private String group;
@@ -60,7 +60,7 @@ public class OpaqueTestVectorData {
   @Data
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Inputs{
+  public static class Inputs {
     @JsonProperty("blind_login")
     private String blindLogin;
     @JsonProperty("blind_registration")
@@ -95,7 +95,7 @@ public class OpaqueTestVectorData {
   @Data
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Intermediates{
+  public static class Intermediates {
     @JsonProperty("auth_key")
     private String authKey;
     @JsonProperty("client_mac_key")
@@ -118,7 +118,7 @@ public class OpaqueTestVectorData {
   @Data
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Outputs{
+  public static class Outputs {
     @JsonProperty("KE1")
     private String ke1;
     @JsonProperty("KE2")

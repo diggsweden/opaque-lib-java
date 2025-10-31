@@ -11,12 +11,12 @@ public class TU {
 
   public static String hex(String label, byte[] byteArray) {
     return new StringBuilder()
-      .append(label)
-      .append(" (Size: ")
-      .append(byteArray.length)
-      .append(")\n")
-      .append(hex(byteArray))
-      .toString();
+        .append(label)
+        .append(" (Size: ")
+        .append(byteArray.length)
+        .append(")\n")
+        .append(hex(byteArray))
+        .toString();
   }
 
   public static String hex(byte[] byteArray) {

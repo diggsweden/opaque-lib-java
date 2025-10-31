@@ -13,7 +13,8 @@ import se.digg.crypto.opaque.server.keys.DerivedKeys;
 public interface KeyDerivationFunctions {
 
   /**
-   * Extract a pseudorandom key of fixed length Nx bytes from input keying material ikm and an optional byte string salt.
+   * Extract a pseudorandom key of fixed length Nx bytes from input keying material ikm and an
+   * optional byte string salt.
    *
    * @param salt salt value
    * @param inputKeyingMaterial input keying material
@@ -29,7 +30,8 @@ public interface KeyDerivationFunctions {
   int getExtractSize();
 
   /**
-   * The size of nonce values (Nn) used in Opaque key derivation. For regular usage in Opaque Nn = Nseed = 32
+   * The size of nonce values (Nn) used in Opaque key derivation. For regular usage in Opaque Nn =
+   * Nseed = 32
    *
    * @return nonce value size
    */
@@ -52,11 +54,12 @@ public interface KeyDerivationFunctions {
    * @return keying material of length l
    */
   byte[] expand(byte[] pseudoRandomKey, String info, int l);
+
   byte[] expand(byte[] pseudoRandomKey, byte[] info, int l);
 
   /**
-   * Derive-Secret(Secret, Label, Transcript-Hash) = Expand-Label(Secret, Label, Transcript-Hash, Nx)
-   * Expand-Label(Secret, Label, Context, Length) = Expand(Secret, CustomLabel, Length)
+   * Derive-Secret(Secret, Label, Transcript-Hash) = Expand-Label(Secret, Label, Transcript-Hash,
+   * Nx) Expand-Label(Secret, Label, Context, Length) = Expand(Secret, CustomLabel, Length)
    *
    * @param ikm inputKeyingMaterial
    * @param preamble seed data

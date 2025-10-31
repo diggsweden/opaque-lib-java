@@ -26,15 +26,15 @@ class TLSSyntaxTest {
   void encodeDataTest() throws Exception {
 
     TLSSyntaxEncoder encoder = new TLSSyntaxEncoder()
-      .addFixedLengthData(Hex.decode("01 02 03 04"))
-      .addVariableLengthData(Hex.decode("e1 e2 e3 e4"), 2);
+        .addFixedLengthData(Hex.decode("01 02 03 04"))
+        .addVariableLengthData(Hex.decode("e1 e2 e3 e4"), 2);
 
     log.info("Encoded result: {}", Hex.toHexString(encoder.toBytes()));
     assertEquals("010203040004e1e2e3e4", Hex.toHexString(encoder.toBytes()));
 
     InvalidInputException invalidInputException = assertThrows(InvalidInputException.class, () -> {
       new TLSSyntaxEncoder().addVariableLengthData(
-        repeat((byte) 0x7f, 257), 1);
+          repeat((byte) 0x7f, 257), 1);
     });
     log.info("Received expected exception: {}", invalidInputException.toString());
   }
@@ -57,7 +57,8 @@ class TLSSyntaxTest {
 
     assertEquals(0, parser.getData().length);
 
-    byte[] singleValueExtract = new TLSSyntaxParser(Hex.decode("04e1e2e3e4")).extractVariableLength(1);
+    byte[] singleValueExtract =
+        new TLSSyntaxParser(Hex.decode("04e1e2e3e4")).extractVariableLength(1);
     assertEquals("e1e2e3e4", Hex.toHexString(singleValueExtract));
     log.info("Single value extract: {}", Hex.toHexString(singleValueExtract));
 

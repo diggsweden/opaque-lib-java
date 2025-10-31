@@ -13,6 +13,6 @@ import se.digg.crypto.opaque.dto.RegistrationRecord;
  * @author Stefan Santesson (stefan@idsec.se)
  */
 public record RegistrationFinalizationResult(
-  RegistrationRecord registrationRecord,
-  byte[] exportKey) {
+    RegistrationRecord registrationRecord,
+    byte[] exportKey) {
 }

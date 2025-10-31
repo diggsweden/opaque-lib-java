@@ -13,23 +13,24 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxParser;
  * Registration record
  */
 public record RegistrationRecord(
-  /* The client's encoded public key, corresponding to the private key client_private_key. */
-  byte[] clientPublicKey,
-  /* An encryption key used by the server with the sole purpose of defending against client enumeration attacks. */
-  byte[] maskingKey,
-  /* The client's Envelope structure */
-  Envelope envelope
-) {
+    /* The client's encoded public key, corresponding to the private key client_private_key. */
+    byte[] clientPublicKey,
+    /*
+     * An encryption key used by the server with the sole purpose of defending against client
+     * enumeration attacks.
+     */
+    byte[] maskingKey,
+    /* The client's Envelope structure */
+    Envelope envelope) {
 
   public static RegistrationRecord fromBytes(byte[] registrationRecordBytes, int clientPkLen,
-    int hashLen, int nonceLen) throws InvalidInputException {
+      int hashLen, int nonceLen) throws InvalidInputException {
     // int envelopeLen = registrationRecordBytes.length - (clientPkLen + hashLen);
     TLSSyntaxParser parser = new TLSSyntaxParser(registrationRecordBytes);
     return new RegistrationRecord(
-      parser.extractFixedLength(clientPkLen),
-      parser.extractFixedLength(hashLen),
-      Envelope.fromBytes(parser.getData(), nonceLen)
-    );
+        parser.extractFixedLength(clientPkLen),
+        parser.extractFixedLength(hashLen),
+        Envelope.fromBytes(parser.getData(), nonceLen));
   }
 
   public byte[] getEncoded() {

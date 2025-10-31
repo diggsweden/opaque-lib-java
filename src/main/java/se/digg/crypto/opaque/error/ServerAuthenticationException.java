@@ -10,7 +10,8 @@ import java.io.Serial;
  * ServerAuthentication exception
  */
 public class ServerAuthenticationException extends Exception {
-  @Serial private static final long serialVersionUID = 6275036828809751883L;
+  @Serial
+  private static final long serialVersionUID = 6275036828809751883L;
 
   /** {@inheritDoc} */
   public ServerAuthenticationException(String message) {

@@ -31,21 +31,18 @@ public class TestData {
   public static List<OPRFTestVectorData> getOprfTestVectors() {
     try {
       return OBJECT_MAPPER.readValue(TestData.class.getResourceAsStream("/oprf-vectors.json"),
-        new TypeReference<>() {
-        });
-    }
-    catch (IOException e) {
+          new TypeReference<>() {});
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
   public static List<OpaqueTestVectorData> getOpaqueTestVectors() {
     try {
-      return OBJECT_MAPPER.readValue(TestData.class.getResourceAsStream("/opaque-test-vectors.json"),
-        new TypeReference<>() {
-        });
-    }
-    catch (IOException e) {
+      return OBJECT_MAPPER.readValue(
+          TestData.class.getResourceAsStream("/opaque-test-vectors.json"),
+          new TypeReference<>() {});
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }

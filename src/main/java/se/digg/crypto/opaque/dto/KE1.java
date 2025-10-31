@@ -15,19 +15,18 @@ import se.digg.crypto.opaque.error.InvalidInputException;
  * Key Exchange message 2 record
  */
 public record KE1(
-  CredentialRequest credentialRequest,
-  AuthRequest authRequest
-) {
+    CredentialRequest credentialRequest,
+    AuthRequest authRequest) {
 
-  public static KE1 fromBytes(byte[] ke1Bytes, int blindedMessageLen, int nonceLength) throws InvalidInputException {
+  public static KE1 fromBytes(byte[] ke1Bytes, int blindedMessageLen, int nonceLength)
+      throws InvalidInputException {
     List<byte[]> split = OpaqueUtils.split(ke1Bytes, blindedMessageLen);
     return new KE1(
-      CredentialRequest.fromBytes(split.get(0)),
-      AuthRequest.fromBytes(split.get(1), nonceLength)
-    );
+        CredentialRequest.fromBytes(split.get(0)),
+        AuthRequest.fromBytes(split.get(1), nonceLength));
   }
 
-  public byte[] getEncoded(){
+  public byte[] getEncoded() {
     return Arrays.concatenate(credentialRequest.getEncoded(), authRequest.getEncoded());
   }
 }

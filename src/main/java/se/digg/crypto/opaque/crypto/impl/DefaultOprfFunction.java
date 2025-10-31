@@ -44,14 +44,16 @@ public class DefaultOprfFunction extends AbstractOprfFunction {
    * @param hashFunctions hash functions
    * @param applicationContext Application context parameter
    */
-  public DefaultOprfFunction(OpaqueCurve opaqueCurve, HashFunctions hashFunctions, String applicationContext) {
+  public DefaultOprfFunction(OpaqueCurve opaqueCurve, HashFunctions hashFunctions,
+      String applicationContext) {
     super(opaqueCurve, hashFunctions, applicationContext);
   }
 
-  @Override public BlindedElement blind(byte[] elementData) throws DeriveKeyPairErrorException {
+  @Override
+  public BlindedElement blind(byte[] elementData) throws DeriveKeyPairErrorException {
     BigInteger blind = opaqueCurve.randomScalar();
     ECPoint inputElementPoint = opaqueCurve.hashToGroup(elementData);
-    if (opaqueCurve.getParameterSpec().getCurve().getInfinity().equals(inputElementPoint)){
+    if (opaqueCurve.getParameterSpec().getCurve().getInfinity().equals(inputElementPoint)) {
       throw new DeriveKeyPairErrorException("Illegal blind point");
     }
     ECPoint blindedElement = inputElementPoint.multiply(blind);
@@ -59,69 +61,74 @@ public class DefaultOprfFunction extends AbstractOprfFunction {
     return new BlindedElement(blind.toByteArray(), blindedElement);
   }
 
-  @Override public byte[] finalize(byte[] elementData, byte[] blind, ECPoint evaluatedElement)
-    throws DeserializationException, InvalidInputException {
+  @Override
+  public byte[] finalize(byte[] elementData, byte[] blind, ECPoint evaluatedElement)
+      throws DeserializationException, InvalidInputException {
     BigInteger blindScalar = new BigInteger(1, blind);
-    BigInteger blindInverse = blindScalar.modInverse(opaqueCurve.getParameterSpec().getCurve().getOrder());
+    BigInteger blindInverse =
+        blindScalar.modInverse(opaqueCurve.getParameterSpec().getCurve().getOrder());
     ECPoint unblindedElement = evaluatedElement.multiply(blindInverse);
     return hashFunctions.hash(new TLSSyntaxEncoder()
         .addVariableLengthData(elementData, 2)
         .addVariableLengthData(unblindedElement.getEncoded(true), 2)
         .addFixedLengthData("Finalize".getBytes(StandardCharsets.UTF_8))
-      .toBytes());
+        .toBytes());
   }
 
-  @Override public ECPoint blindEvaluate(OprfPrivateKey k, ECPoint blindElement) throws DeriveKeyPairErrorException {
-    if(k.isByteValue()) {
+  @Override
+  public ECPoint blindEvaluate(OprfPrivateKey k, ECPoint blindElement)
+      throws DeriveKeyPairErrorException {
+    if (k.isByteValue()) {
       ECPoint blindEvaluatePoint = blindElement.multiply(new BigInteger(1, k.getPrivateKeyBytes()));
       return blindEvaluatePoint;
     }
     try {
       byte[] sharedSecretPoint = diffieHellman(k.getKeyPair(), serializeElement(blindElement));
       return deserializeElement(sharedSecretPoint);
-    }
-    catch (DeserializationException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException |
-           NoSuchProviderException | InvalidInputException e) {
+    } catch (DeserializationException | NoSuchAlgorithmException | InvalidKeySpecException
+        | InvalidKeyException | NoSuchProviderException | InvalidInputException e) {
       throw new DeriveKeyPairErrorException("Error doing blind evaluate with Diffie-Hellman", e);
     }
   }
 
 
-  @Override public KeyPairRecord deriveKeyPair(byte[] seed, String info) throws DeriveKeyPairErrorException {
+  @Override
+  public KeyPairRecord deriveKeyPair(byte[] seed, String info) throws DeriveKeyPairErrorException {
     try {
       byte[] deriveInput = new TLSSyntaxEncoder()
-        .addFixedLengthData(seed)
-        .addVariableLengthData(info.getBytes(StandardCharsets.UTF_8), 2)
-        .toBytes();
+          .addFixedLengthData(seed)
+          .addVariableLengthData(info.getBytes(StandardCharsets.UTF_8), 2)
+          .toBytes();
       int counter = 0;
       BigInteger skS = BigInteger.ZERO;
       while (skS.equals(BigInteger.ZERO)) {
         if (counter > 255) {
-          throw new DeriveKeyPairErrorException("Key generator counter exceeded max allowed iterations");
+          throw new DeriveKeyPairErrorException(
+              "Key generator counter exceeded max allowed iterations");
         }
         skS = opaqueCurve.hashToScalar(new TLSSyntaxEncoder()
-          .addFixedLengthData(deriveInput)
-          .addFixedLengthData(OpaqueUtils.i2osp(counter, 1))
-          .toBytes(), "DeriveKeyPair");
+            .addFixedLengthData(deriveInput)
+            .addFixedLengthData(OpaqueUtils.i2osp(counter, 1))
+            .toBytes(), "DeriveKeyPair");
         counter++;
       }
       ECPoint pkS = opaqueCurve.getParameterSpec().getG().multiply(skS).normalize();
       return new KeyPairRecord(pkS.getEncoded(true), skS.toByteArray());
-    }
-    catch (InvalidInputException e) {
-      throw new DeriveKeyPairErrorException("Failed to derive deterministic key from seed and info", e);
+    } catch (InvalidInputException e) {
+      throw new DeriveKeyPairErrorException("Failed to derive deterministic key from seed and info",
+          e);
     }
   }
 
 
   @Override
   public byte[] diffieHellman(OprfPrivateKey oprfPrivateKey, byte[] publicPoint)
-    throws DeserializationException, InvalidInputException {
+      throws DeserializationException, InvalidInputException {
     if (!oprfPrivateKey.isByteValue()) {
       try {
         return diffieHellman(oprfPrivateKey.getKeyPair(), publicPoint);
-      }
-      catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException | NoSuchProviderException e) {
+      } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException
+          | NoSuchProviderException e) {
         throw new InvalidInputException("Invalid DH key agreement parameters", e);
       }
     }
@@ -132,20 +139,24 @@ public class DefaultOprfFunction extends AbstractOprfFunction {
   }
 
   protected byte[] diffieHellman(KeyPair keyPair, byte[] publicPoint)
-    throws DeserializationException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException,
-    NoSuchProviderException, InvalidInputException {
+      throws DeserializationException, NoSuchAlgorithmException, InvalidKeySpecException,
+      InvalidKeyException,
+      NoSuchProviderException, InvalidInputException {
     ECPoint ecPoint = deserializeElement(publicPoint);
     // Evaluate PW Point with DiffieHellman
     byte[] sharedSecret = deriveDiffieHellmanSharedSecret(keyPair.getPrivate(), ecPoint);
-    byte[] controlPoint = deriveDiffieHellmanSharedSecret(keyPair.getPrivate(), ecPoint.add(opaqueCurve.getParameterSpec().getG()));
-    byte[] y = deriveYCoordinate(sharedSecret, controlPoint, deserializeElement(serializePublicKey(keyPair.getPublic())));
+    byte[] controlPoint = deriveDiffieHellmanSharedSecret(keyPair.getPrivate(),
+        ecPoint.add(opaqueCurve.getParameterSpec().getG()));
+    byte[] y = deriveYCoordinate(sharedSecret, controlPoint,
+        deserializeElement(serializePublicKey(keyPair.getPublic())));
     ECPoint resultPoint = deserializeElement(Arrays.concatenate(y, sharedSecret));
     return serializeElement(resultPoint);
   }
 
   public byte[] deriveDiffieHellmanSharedSecret(PrivateKey privateKey, ECPoint publicPoint)
-    throws DeserializationException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException,
-    InvalidKeySpecException {
+      throws DeserializationException, NoSuchAlgorithmException, InvalidKeyException,
+      NoSuchProviderException,
+      InvalidKeySpecException {
     KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH");
     keyAgreement.init(privateKey);
     keyAgreement.doPhase(getPublicECKey(serializeElement(publicPoint)), true);

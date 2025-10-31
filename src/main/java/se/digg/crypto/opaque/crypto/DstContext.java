@@ -28,8 +28,8 @@ public class DstContext {
   /**
    * Creates a DST (Domain Separation Tag) context object.
    *
-   * @param version    the version of the OPRF DST context
-   * @param mode       the mode of the DST context
+   * @param version the version of the OPRF DST context
+   * @param mode the mode of the DST context
    * @param identifier the identifier of the EC curve params
    */
   public DstContext(String version, int mode, String identifier) {
@@ -41,7 +41,7 @@ public class DstContext {
   /**
    * Creates a DST (Domain Separation Tag) context object with a default version set to OPRFV1.
    *
-   * @param mode       the mode of the DST context
+   * @param mode the mode of the DST context
    * @param identifier the identifier of the EC curve params
    */
   public DstContext(int mode, String identifier) {
@@ -51,8 +51,8 @@ public class DstContext {
   }
 
   /**
-   * Creates a DST (Domain Separation Tag) context object with a default version set to OPRFV1
-   * and mode set to 0 (OPRF)
+   * Creates a DST (Domain Separation Tag) context object with a default version set to OPRFV1 and
+   * mode set to 0 (OPRF)
    *
    * @param identifier the identifier of the EC curve params
    */
@@ -65,6 +65,7 @@ public class DstContext {
   public byte[] getHash2CurveDST() {
     return OpaqueUtils.concat("HashToGroup-", getContextString());
   }
+
   public byte[] getHash2ScalarDefaultDST() {
     return OpaqueUtils.concat("HashToScalar-", getContextString());
   }
@@ -75,9 +76,8 @@ public class DstContext {
 
   public byte[] getContextString() {
     try {
-      return OpaqueUtils.concat(version,"-", OpaqueUtils.i2osp(mode, 1), "-", identifier);
-    }
-    catch (InvalidInputException e) {
+      return OpaqueUtils.concat(version, "-", OpaqueUtils.i2osp(mode, 1), "-", identifier);
+    } catch (InvalidInputException e) {
       throw new RuntimeException(e);
     }
   }
