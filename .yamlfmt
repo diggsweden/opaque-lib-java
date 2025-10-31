@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2025 Digg - Agency for Digital Government
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# YAML formatting configuration for yamlfmt
+
+formatter:
+  type: basic
+  indent: 2
+  include_document_start: true
+  retain_line_breaks: true
+  max_line_length: 120
