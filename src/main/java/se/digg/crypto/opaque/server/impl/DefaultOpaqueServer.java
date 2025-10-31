@@ -10,12 +10,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
-
-import org.bouncycastle.math.ec.ECPoint;
-
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.math.ec.ECPoint;
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.client.CleartextCredentials;
 import se.digg.crypto.opaque.crypto.HashFunctions;
@@ -41,25 +39,26 @@ import se.digg.crypto.opaque.server.keys.DerivedKeys;
 import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 
 /**
- * Default implementation of OPAQUE server
+ * Default implementation of OPAQUE server.
  */
+
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultOpaqueServer implements OpaqueServer {
 
-  /** The server HSM protected private key */
+  /** The server HSM protected private key. */
   @Setter
   protected KeyPair staticOprfKeyPair;
 
-  /** Provider of OPRF functions */
+  /** Provider of OPRF functions. */
   protected final OprfFunctions oprf;
-  /** Provider of key derivation functions */
+  /** Provider of key derivation functions. */
   protected final KeyDerivationFunctions keyDerivation;
-  /** Provider of hash functions */
+  /** Provider of hash functions. */
   protected final HashFunctions hashFunctions;
 
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public RegistrationResponse createRegistrationResponse(byte[] registrationRequest,
       byte[] serverPublicKey, byte[] credentialIdentifier, byte[] oprfSeed)
@@ -72,7 +71,7 @@ public class DefaultOpaqueServer implements OpaqueServer {
     return new RegistrationResponse(evaluatedMessage, serverPublicKey);
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public KE2 generateKe2(byte[] serverIdentity, OprfPrivateKey serverPrivateKey,
       byte[] serverPublicKey,
@@ -104,7 +103,7 @@ public class DefaultOpaqueServer implements OpaqueServer {
     return new KE2(credentialResponse, authResponse);
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public byte[] serverFinish(byte[] ke3Bytes, ServerState state)
       throws ClientAuthenticationException {
@@ -117,9 +116,9 @@ public class DefaultOpaqueServer implements OpaqueServer {
    * Finalizes the server authentication process by verifying the client's message authentication
    * code (MAC) and returning the established session key.
    *
-   * @param ke3 the third key exchange message containing the client's MAC
-   * @param state the current server state, including the expected client MAC and session key
-   * @return the session key derived during the key exchange process
+   * @param ke3 the third key exchange message containing the client's MAC.
+   * @param state the current server state, including the expected client MAC and session key.
+   * @return the session key derived during the key exchange process.
    * @throws ClientAuthenticationException if the client's MAC does not match the server's expected
    *         value, indicating a failed client authentication
    */
@@ -173,11 +172,11 @@ public class DefaultOpaqueServer implements OpaqueServer {
    * private key. If a static OPRF key pair is available, it is used in combination to finalize the
    * evaluation.
    *
-   * @param blindedMessage the blinded message provided by the client to be evaluated
-   * @param oprfSeed the seed used for key derivation within the OPRF protocol
-   * @param credentialIdentifier a unique credential identifier used for key derivation
-   * @return the serialized evaluated element resulting from the OPRF protocol
-   * @throws DeriveKeyPairErrorException if an error occurs during key pair derivation
+   * @param blindedMessage the blinded message provided by the client to be evaluated.
+   * @param oprfSeed the seed used for key derivation within the OPRF protocol.
+   * @param credentialIdentifier a unique credential identifier used for key derivation.
+   * @return the serialized evaluated element resulting from the OPRF protocol.
+   * @throws DeriveKeyPairErrorException if an error occurs during key pair derivation.
    * @throws DeserializationException if an error occurs while deserializing elements
    */
   protected byte[] getEvaluateMessage(byte[] blindedMessage, byte[] oprfSeed,
@@ -207,24 +206,24 @@ public class DefaultOpaqueServer implements OpaqueServer {
    * authentication codes (MACs).
    *
    * @param cleartextCredentials the cleartext credentials containing the server's public key,
-   *        server identity, and client identity
-   * @param serverPrivateKey the server's private key used for the Diffie-Hellman operations
-   * @param clientPublicKey the client's public key used in the authentication
+   *        server identity, and client identity.
+   * @param serverPrivateKey the server's private key used for the Diffie-Hellman operations.
+   * @param clientPublicKey the client's public key used in the authentication.
    * @param ke1 the first key exchange message from the client, containing the authentication
-   *        request and credential request
+   *        request and credential request.
    * @param credentialResponse the credential response generated as part of the OPRF protocol,
-   *        including the evaluated message, masking nonce, and masked response
+   *        including the evaluated message, masking nonce, and masked response.
    * @param state the current state of the server, used to track the authentication and session key
-   *        negotiation process
+   *        negotiation process.
    * @return an AuthResponse object containing the server nonce, server public key share, and the
-   *         computed server MAC to be sent to the client
+   *         computed server MAC to be sent to the client.
    * @throws DeriveKeyPairErrorException if an error occurs during Diffie-Hellman key pair
-   *         derivation
-   * @throws InvalidInputException if any of the input data is invalid or improperly formatted
-   * @throws DeserializationException if an error occurs while deserializing protocol elements
-   * @throws NoSuchAlgorithmException if a required cryptographic algorithm is unavailable
-   * @throws InvalidKeySpecException if the key specification is invalid during key handling
-   * @throws InvalidKeyException if a key is invalid for cryptographic operations
+   *         derivation.
+   * @throws InvalidInputException if any of the input data is invalid or improperly formatted.
+   * @throws DeserializationException if an error occurs while deserializing protocol elements.
+   * @throws NoSuchAlgorithmException if a required cryptographic algorithm is unavailable.
+   * @throws InvalidKeySpecException if the key specification is invalid during key handling.
+   * @throws InvalidKeyException if a key is invalid for cryptographic operations.
    * @throws NoSuchProviderException if a required cryptographic provider is unavailable
    */
   protected AuthResponse authServerRespond(CleartextCredentials cleartextCredentials,

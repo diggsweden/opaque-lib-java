@@ -18,13 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.client.CleartextCredentials;
 import se.digg.crypto.opaque.dto.CredentialResponse;
 import se.digg.crypto.opaque.dto.KE1;
@@ -35,16 +33,17 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxParser;
 import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 
 /**
- * Opaque Utility functions
+ * Opaque Utility functions.
  */
+
 public class OpaqueUtils {
 
   private static final Random RNG = new SecureRandom();
 
   /**
-   * Concatenate parts to a byte array
+   * Concatenate parts to a byte array.
    *
-   * @param parts each part must be a byte array or a UTF-8 encoded string
+   * @param parts each part must be a byte array or a UTF-8 encoded string.
    * @return concatenated byte array
    */
   public static byte[] concat(Object... parts) {

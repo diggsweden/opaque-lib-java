@@ -241,8 +241,8 @@ SPDX-License-Identifier: EUPL-1.2
           <configLocation>development/lint/google_checks.xml</configLocation>
           <includeTestSourceDirectory>false</includeTestSourceDirectory>
           <consoleOutput>true</consoleOutput>
-          <failsOnError>false</failsOnError>
-          <violationSeverity>error</violationSeverity>
+          <failsOnError>true</failsOnError>
+          <violationSeverity>warning</violationSeverity>
         </configuration>
         <executions>
           <execution>

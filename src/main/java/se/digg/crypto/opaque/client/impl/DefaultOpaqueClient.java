@@ -6,12 +6,9 @@ package se.digg.crypto.opaque.client.impl;
 
 import java.util.Arrays;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.ec.ECPoint;
-
-import lombok.RequiredArgsConstructor;
-
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.client.AuthClientFinalizeResult;
 import se.digg.crypto.opaque.client.BlindedElement;
@@ -48,21 +45,22 @@ import se.digg.crypto.opaque.server.keys.DerivedKeys;
 import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 
 /**
- * Default implementation of the Opaque client
+ * Default implementation of the Opaque client.
  */
+
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultOpaqueClient implements OpaqueClient {
 
-  /** OPRF functions */
+  /** OPRF functions. */
   protected final OprfFunctions oprf;
-  /** Key derivation functions */
+  /** Key derivation functions. */
   protected final KeyDerivationFunctions keyDerivation;
-  /** Hash, hmac and stretch functions */
+  /** Hash, hmac and stretch functions. */
   protected final HashFunctions hashFunctions;
 
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public RegistrationRequestResult createRegistrationRequest(byte[] password)
       throws DeriveKeyPairErrorException {
@@ -73,7 +71,7 @@ public class DefaultOpaqueClient implements OpaqueClient {
     return new RegistrationRequestResult(request, blindData.blind());
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public RegistrationFinalizationResult finalizeRegistrationRequest(byte[] password, byte[] blind,
       byte[] registrationResponseBytes,
@@ -100,7 +98,7 @@ public class DefaultOpaqueClient implements OpaqueClient {
     return new RegistrationFinalizationResult(registrationRecord, clientStoreRecord.exportKey());
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public KE1 generateKe1(byte[] password, ClientState state) throws DeriveKeyPairErrorException {
     log.debug("Generating OPAQUE KE1");
@@ -110,7 +108,7 @@ public class DefaultOpaqueClient implements OpaqueClient {
     return authClientStart(credentialRequestData.credentialRequest(), state.getClientAkeState());
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public ClientKeyExchangeResult generateKe3(byte[] clientIdentity, byte[] serverIdentity,
       byte[] ke2Bytes, ClientState clientState)
@@ -168,7 +166,7 @@ public class DefaultOpaqueClient implements OpaqueClient {
 
   /**
    * Recovers client credentials from a secure envelope and derives cryptographic keys for further
-   * operations. This is the recover function defined in OPAQUE
+   * operations. This is the recover function defined in OPAQUE.
    *
    * @param randomizedPassword The processed password used as input to cryptographic key derivation.
    * @param serverPublicKey The public key of the server, used in the recovery process.

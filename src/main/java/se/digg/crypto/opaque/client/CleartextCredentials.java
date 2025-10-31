@@ -8,8 +8,9 @@ import se.digg.crypto.opaque.error.InvalidInputException;
 import se.digg.crypto.opaque.protocol.TLSSyntaxEncoder;
 
 /**
- * Cleartext credentials record
+ * Cleartext credentials record.
  */
+
 public record CleartextCredentials(
     byte[] serverPublicKey,
     byte[] serverIdentity,

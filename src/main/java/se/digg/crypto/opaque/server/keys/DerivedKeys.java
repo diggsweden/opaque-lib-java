@@ -5,8 +5,9 @@
 package se.digg.crypto.opaque.server.keys;
 
 /**
- * Derived Keys Record
+ * Derived Keys Record.
  */
+
 public record DerivedKeys(
     /* A MAC authentication key */
     byte[] km2,

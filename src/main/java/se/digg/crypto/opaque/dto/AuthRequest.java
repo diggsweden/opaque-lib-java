@@ -5,13 +5,13 @@
 package se.digg.crypto.opaque.dto;
 
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.error.InvalidInputException;
 import se.digg.crypto.opaque.protocol.TLSSyntaxParser;
 
 /**
- * AuthRequestRecord
+ * AuthRequestRecord.
  */
+
 public record AuthRequest(
     byte[] clientNonce,
     byte[] clientPublicKey) {

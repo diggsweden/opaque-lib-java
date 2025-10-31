@@ -24,6 +24,8 @@ SPDX-License-Identifier: EUPL-1.2
 
     Modifications:
     - MissingJavadocMethod and MissingJavadocType checks are suppressed
+    - AbbreviationAsWordInName check is suppressed (OPRF protocol uses abbreviations like TLS, 
+      OPRF, KE1/KE2/KE3, HKDF, EC, PK, DST which are standard in cryptographic protocols)
  -->
 
 <module name="Checker">
@@ -275,6 +277,7 @@ SPDX-License-Identifier: EUPL-1.2
       <property name="query" value="//SLIST[not(parent::CASE_GROUP)]/SLIST
                                    | //SLIST[not(parent::CASE_GROUP)]/SLIST/RCURLY"/>
     </module>
+    <!-- Suppressed: OPRF protocol uses abbreviations like TLS, OPRF, KE1/KE2/KE3, HKDF, EC, PK, DST
     <module name="AbbreviationAsWordInName">
       <property name="ignoreFinal" value="false"/>
       <property name="allowedAbbreviationLength" value="0"/>
@@ -282,6 +285,7 @@ SPDX-License-Identifier: EUPL-1.2
                     PARAMETER_DEF, VARIABLE_DEF, METHOD_DEF, PATTERN_VARIABLE_DEF, RECORD_DEF,
                     RECORD_COMPONENT_DEF"/>
     </module>
+    -->
     <module name="NoWhitespaceBeforeCaseDefaultColon"/>
     <module name="OverloadMethodsDeclarationOrder"/>
     <module name="ConstructorsDeclarationGrouping"/>

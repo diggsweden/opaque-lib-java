@@ -14,12 +14,10 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Optional;
-
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.crypto.HashFunctions;
 import se.digg.crypto.opaque.crypto.OpaqueCurve;
@@ -30,12 +28,13 @@ import se.digg.crypto.opaque.error.InvalidInputException;
 import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 
 /**
- * Abstract key exchange functions
+ * Abstract key exchange functions.
  */
+
 public abstract class AbstractOprfFunction implements OprfFunctions {
 
-  protected final static byte[] EVEN_Y = new byte[] {0x02};
-  protected final static byte[] ODD_Y = new byte[] {0x03};
+  protected static final byte[] EVEN_Y = new byte[] {0x02};
+  protected static final byte[] ODD_Y = new byte[] {0x03};
 
   protected final String applicationContext;
 
@@ -44,10 +43,10 @@ public abstract class AbstractOprfFunction implements OprfFunctions {
   protected final OpaqueCurve opaqueCurve;
 
   /**
-   * Constructor, using a curve specified by {@link ECNamedCurveParameterSpec}
+   * Constructor, using a curve specified by {@link ECNamedCurveParameterSpec}.
    *
-   * @param opaqueCurve curve parameter spec and functions
-   * @param hashFunctions hash functions
+   * @param opaqueCurve curve parameter spec and functions.
+   * @param hashFunctions hash functions.
    * @param applicationContext Application context parameter
    */
   public AbstractOprfFunction(OpaqueCurve opaqueCurve, HashFunctions hashFunctions,
@@ -57,7 +56,7 @@ public abstract class AbstractOprfFunction implements OprfFunctions {
     this.opaqueCurve = opaqueCurve;
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public KeyPairRecord deriveDiffieHellmanKeyPair(byte[] seed) throws DeriveKeyPairErrorException {
     return deriveKeyPair(seed, "OPAQUE-DeriveDiffieHellmanKeyPair");

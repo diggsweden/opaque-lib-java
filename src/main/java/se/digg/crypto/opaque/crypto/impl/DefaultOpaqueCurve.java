@@ -6,7 +6,6 @@ package se.digg.crypto.opaque.crypto.impl;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.digests.SHA384Digest;
@@ -15,7 +14,6 @@ import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.hashtocurve.CurveProcessor;
 import se.digg.crypto.hashtocurve.HashToEllipticCurve;
 import se.digg.crypto.hashtocurve.HashToScalar;
@@ -32,11 +30,12 @@ import se.digg.crypto.opaque.crypto.DstContext;
 import se.digg.crypto.opaque.crypto.OpaqueCurve;
 
 /**
- * Default OPAQUE curve implementing hash2curve from RFC 9380
+ * Default OPAQUE curve implementing hash2curve from RFC 9380.
  */
+
 public class DefaultOpaqueCurve implements OpaqueCurve {
 
-  protected final static SecureRandom RNG = new SecureRandom();
+  protected static final SecureRandom RNG = new SecureRandom();
 
   protected final ECParameterSpec parameterSpec;
   protected final HashToEllipticCurve h2c;

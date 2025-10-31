@@ -8,8 +8,9 @@ import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.error.InvalidInputException;
 
 /**
- * Functions to derive a DST based on a correct context string for use in OPRF and OPAQUE
+ * Functions to derive a DST based on a correct context string for use in OPRF and OPAQUE.
  */
+
 public class DstContext {
 
   public static final String VERSION_OPRFV1 = "OPRFV1";
@@ -28,8 +29,8 @@ public class DstContext {
   /**
    * Creates a DST (Domain Separation Tag) context object.
    *
-   * @param version the version of the OPRF DST context
-   * @param mode the mode of the DST context
+   * @param version the version of the OPRF DST context.
+   * @param mode the mode of the DST context.
    * @param identifier the identifier of the EC curve params
    */
   public DstContext(String version, int mode, String identifier) {
@@ -41,7 +42,7 @@ public class DstContext {
   /**
    * Creates a DST (Domain Separation Tag) context object with a default version set to OPRFV1.
    *
-   * @param mode the mode of the DST context
+   * @param mode the mode of the DST context.
    * @param identifier the identifier of the EC curve params
    */
   public DstContext(int mode, String identifier) {
@@ -52,7 +53,7 @@ public class DstContext {
 
   /**
    * Creates a DST (Domain Separation Tag) context object with a default version set to OPRFV1 and
-   * mode set to 0 (OPRF)
+   * mode set to 0 (OPRF).
    *
    * @param identifier the identifier of the EC curve params
    */

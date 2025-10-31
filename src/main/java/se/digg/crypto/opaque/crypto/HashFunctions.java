@@ -10,19 +10,20 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.util.DigestFactory;
 
 /**
- * Generic implementation of Hash Functions
+ * Generic implementation of Hash Functions.
  */
+
 public class HashFunctions {
 
-  /** Implementation of the stretch algorithm used in OPRF */
+  /** Implementation of the stretch algorithm used in OPRF. */
   StretchAlgorithm stretchAlgorithm;
-  /** Digest algorithm used as the base hash function */
+  /** Digest algorithm used as the base hash function. */
   Digest digestAlgorithm;
 
   /**
-   * Constructor
+   * Constructor.
    *
-   * @param digestAlgorithm digest algorithm used as the base hash function
+   * @param digestAlgorithm digest algorithm used as the base hash function.
    * @param stretchAlgorithm the stretch algorithm used in OPRF
    */
   public HashFunctions(Digest digestAlgorithm, StretchAlgorithm stretchAlgorithm) {
@@ -35,7 +36,7 @@ public class HashFunctions {
    * Applying a key stretching function to the output of the OPRF greatly increases the cost of an
    * offline attack upon the compromise of the credential file at the server.
    *
-   * @param message the data to stretch
+   * @param message the data to stretch.
    * @return stretched message
    */
   public byte[] stretch(byte[] message) {
@@ -43,9 +44,9 @@ public class HashFunctions {
   }
 
   /**
-   * Calculates a hash over a message
+   * Calculates a hash over a message.
    *
-   * @param message message
+   * @param message message.
    * @return hash value
    */
   public byte[] hash(byte[] message) {
@@ -57,7 +58,7 @@ public class HashFunctions {
   }
 
   /**
-   * Get an instance of the digest function
+   * Get an instance of the digest function.
    *
    * @return digest instance
    */
@@ -66,7 +67,7 @@ public class HashFunctions {
   }
 
   /**
-   * Gets the size of hash values in bytes
+   * Gets the size of hash values in bytes.
    *
    * @return hash size in bytes
    */
@@ -75,23 +76,23 @@ public class HashFunctions {
   }
 
   /**
-   * Calculates a MAC (Message Authentication Code) over a message
+   * Calculates a MAC (Message Authentication Code) over a message.
    *
-   * @param key MAC key
-   * @param message message
+   * @param key MAC key.
+   * @param message message.
    * @return mac calculated over the message using the input key
    */
   public byte[] mac(byte[] key, byte[] message) {
-    HMac hMac = new HMac(getDigestInstance());
-    hMac.init(new KeyParameter(key));
-    hMac.update(message, 0, message.length);
+    HMac hmac = new HMac(getDigestInstance());
+    hmac.init(new KeyParameter(key));
+    hmac.update(message, 0, message.length);
     byte[] hmacResult = new byte[getMacSize()];
-    hMac.doFinal(hmacResult, 0);
+    hmac.doFinal(hmacResult, 0);
     return hmacResult;
   }
 
   /**
-   * Getter for MAC size in bytes
+   * Getter for MAC size in bytes.
    *
    * @return MAC size in bytes
    */

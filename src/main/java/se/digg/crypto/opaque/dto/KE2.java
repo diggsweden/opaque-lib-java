@@ -5,15 +5,14 @@
 package se.digg.crypto.opaque.dto;
 
 import java.util.List;
-
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.error.InvalidInputException;
 
 /**
- * Key Exchange message 2 record
+ * Key Exchange message 2 record.
  */
+
 public record KE2(
     CredentialResponse credentialResponse,
     AuthResponse authResponse) {

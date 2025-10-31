@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 import se.digg.crypto.opaque.dto.KE1;
 
 /**
- * Client AKE state
+ * Client AKE state.
  */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

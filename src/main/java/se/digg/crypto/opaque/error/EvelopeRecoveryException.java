@@ -7,8 +7,9 @@ package se.digg.crypto.opaque.error;
 import java.io.Serial;
 
 /**
- * Envelope recovery errors
+ * Envelope recovery errors.
  */
+
 public class EvelopeRecoveryException extends Exception {
   @Serial
   private static final long serialVersionUID = -235428289520652761L;

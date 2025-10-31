@@ -5,8 +5,9 @@
 package se.digg.crypto.opaque.dto;
 
 /**
- * Key Exchange message 3 record
+ * Key Exchange message 3 record.
  */
+
 public record KE3(
     byte[] clientMac) {
 

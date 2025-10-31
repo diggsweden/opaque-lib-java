@@ -5,13 +5,13 @@
 package se.digg.crypto.opaque.crypto;
 
 import java.math.BigInteger;
-
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 
 /**
- * Interface for specific functions and properties bound to a particular selected EC curve
+ * Interface for specific functions and properties bound to a particular selected EC curve.
  */
+
 public interface OpaqueCurve {
 
   ECParameterSpec getParameterSpec();

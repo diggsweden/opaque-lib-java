@@ -5,13 +5,13 @@
 package se.digg.crypto.opaque.protocol;
 
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.error.InvalidInputException;
 
 /**
- * Encoding data to a byte string using TLS syntax
+ * Encoding data to a byte string using TLS syntax.
  */
+
 public class TLSSyntaxEncoder {
 
   private byte[] data;

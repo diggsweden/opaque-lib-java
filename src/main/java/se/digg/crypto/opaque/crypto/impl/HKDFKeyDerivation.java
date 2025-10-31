@@ -5,12 +5,10 @@
 package se.digg.crypto.opaque.crypto.impl;
 
 import java.nio.charset.StandardCharsets;
-
+import lombok.Setter;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.generators.HKDFBytesGenerator;
 import org.bouncycastle.crypto.params.HKDFParameters;
-
-import lombok.Setter;
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.crypto.HashFunctions;
 import se.digg.crypto.opaque.crypto.KeyDerivationFunctions;
@@ -19,8 +17,9 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxEncoder;
 import se.digg.crypto.opaque.server.keys.DerivedKeys;
 
 /**
- * Key derivation based on HKDF
+ * Key derivation based on HKDF.
  */
+
 public class HKDFKeyDerivation implements KeyDerivationFunctions {
 
   private final HashFunctions hashFunctions;
@@ -31,15 +30,15 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
    */
   @Setter
   private int extractSize;
-  /** Nonce size Nn. For Opaque this should always be 32 */
+  /** Nonce size Nn. For Opaque this should always be 32. */
   @Setter
   private int nonceSize;
-  /** Seed size Nseed. For Opaque this should always be 32 */
+  /** Seed size Nseed. For Opaque this should always be 32. */
   @Setter
   private int seedSize;
 
   /**
-   * Constructor
+   * Constructor.
    *
    * @param hashFunctions the hash functions used by HKDF
    */
@@ -50,7 +49,7 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
     this.seedSize = 32;
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public byte[] extract(byte[] salt, byte[] inputKeyingMaterial) {
     HKDFBytesGenerator hkdfGenerator = new HKDFBytesGenerator(hashFunctions.getDigestInstance());
@@ -58,13 +57,13 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
     return hkdfGenerator.extractPRK(salt, inputKeyingMaterial);
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public byte[] expand(byte[] pseudoRandomKey, String info, int l) {
     return expand(pseudoRandomKey, info.getBytes(StandardCharsets.UTF_8), l);
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public byte[] expand(byte[] pseudoRandomKey, byte[] info, int l) {
     HKDFBytesGenerator hkdfGenerator = new HKDFBytesGenerator(new SHA256Digest());
@@ -74,7 +73,7 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
     return expandedKey;
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public DerivedKeys deriveKeys(byte[] ikm, byte[] preamble) throws InvalidInputException {
     byte[] prk = extract(null, ikm);
@@ -99,8 +98,8 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
    *    } CustomLabel;*
    * </code>
    *
-   * @param label label
-   * @param context contextData
+   * @param label label.
+   * @param context contextData.
    * @return custom label
    */
   private byte[] getCustomLabel(String label, byte[] context, int length)
@@ -113,19 +112,19 @@ public class HKDFKeyDerivation implements KeyDerivationFunctions {
         .toBytes();
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public int getExtractSize() {
     return this.extractSize;
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public int getNonceSize() {
     return this.nonceSize;
   }
 
-  /** {@inheritDoc} */
+  /** {@inheritDoc}. */
   @Override
   public int getSeedSize() {
     return seedSize;

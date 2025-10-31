@@ -12,13 +12,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
-
 import javax.crypto.KeyAgreement;
-
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.client.BlindedElement;
 import se.digg.crypto.opaque.crypto.HashFunctions;
@@ -31,17 +28,18 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxEncoder;
 import se.digg.crypto.opaque.server.keys.KeyPairRecord;
 
 /**
- * Default Implementation of OPRF for Opaque
+ * Default Implementation of OPRF for Opaque.
  */
+
 public class DefaultOprfFunction extends AbstractOprfFunction {
 
 
 
   /**
-   * Constructor, using a curve specified by {@link ECNamedCurveParameterSpec}
+   * Constructor, using a curve specified by {@link ECNamedCurveParameterSpec}.
    *
-   * @param opaqueCurve curve parameter spec and functions
-   * @param hashFunctions hash functions
+   * @param opaqueCurve curve parameter spec and functions.
+   * @param hashFunctions hash functions.
    * @param applicationContext Application context parameter
    */
   public DefaultOprfFunction(OpaqueCurve opaqueCurve, HashFunctions hashFunctions,

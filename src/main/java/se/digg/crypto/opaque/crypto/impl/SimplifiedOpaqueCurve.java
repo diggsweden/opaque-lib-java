@@ -6,7 +6,8 @@ package se.digg.crypto.opaque.crypto.impl;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.generators.HKDFBytesGenerator;
@@ -15,29 +16,29 @@ import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
-
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.crypto.HashFunctions;
 import se.digg.crypto.opaque.crypto.OpaqueCurve;
 
 /**
- * Implements a generic implementation of OpaqueCurve with simplified generation of G.hashToGroup
+ * Implements a generic implementation of OpaqueCurve with simplified generation of G.hashToGroup.
+ *
  * <p>
  * This simplified implementation is safe from exposing a known discrete log relationship with the
  * generated point.
+ *
  * <p>
  * This implementation makes a reasonable effort to produce a result in constant ime regardless of
  * how many attempts that are needed to find a valid EC point.
  */
+
 @Slf4j
 public class SimplifiedOpaqueCurve implements OpaqueCurve {
 
-  protected final static SecureRandom RNG = new SecureRandom();
-  protected final static String invalidPoint =
+  protected static final SecureRandom RNG = new SecureRandom();
+  protected static final String invalidPoint =
       "022874574724f40d0e5f7aa9f70b8f4b01ed7521033d75676d9584c2de33dd9591";
-  protected final static String validPoint =
+  protected static final String validPoint =
       "03c3be0fce9bad38dc3978517f4f74442901d3dc22502af2f9be3dba026b322b66";
 
   protected final ECParameterSpec parameterSpec;
@@ -52,9 +53,9 @@ public class SimplifiedOpaqueCurve implements OpaqueCurve {
   private boolean devMode = false;
 
   /**
-   * Constructor using a dafault value of 6 ms minimum constant time
+   * Constructor using a dafault value of 6 ms minimum constant time.
    *
-   * @param parameterSpec parameter spec
+   * @param parameterSpec parameter spec.
    * @param hashFunctions hash functions
    */
   public SimplifiedOpaqueCurve(ECParameterSpec parameterSpec, HashFunctions hashFunctions) {
@@ -62,10 +63,10 @@ public class SimplifiedOpaqueCurve implements OpaqueCurve {
   }
 
   /**
-   * Constructor
+   * Constructor.
    *
-   * @param parameterSpec parameter spec
-   * @param hashFunctions hash functions
+   * @param parameterSpec parameter spec.
+   * @param hashFunctions hash functions.
    * @param constantIterations number of iterations allways done to find a point
    */
   public SimplifiedOpaqueCurve(ECParameterSpec parameterSpec, HashFunctions hashFunctions,

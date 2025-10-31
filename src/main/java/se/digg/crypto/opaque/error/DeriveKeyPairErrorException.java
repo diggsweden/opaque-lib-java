@@ -7,18 +7,28 @@ package se.digg.crypto.opaque.error;
 import java.io.Serial;
 
 /**
- * Derive key pair error exception
+ * Derive key pair error exception.
  */
+
 public class DeriveKeyPairErrorException extends Exception {
   @Serial
   private static final long serialVersionUID = -3914184956788230653L;
 
-  /** {@inheritDoc} */
+  /**
+   * Constructs a new derive key pair error exception with the specified detail message.
+   *
+   * @param message the detail message
+   */
   public DeriveKeyPairErrorException(String message) {
     super(message);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Constructs a new derive key pair error exception with the specified detail message and cause.
+   *
+   * @param message the detail message
+   * @param cause the cause
+   */
   public DeriveKeyPairErrorException(String message, Throwable cause) {
     super(message, cause);
   }

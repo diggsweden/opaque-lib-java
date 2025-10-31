@@ -5,13 +5,8 @@
 package se.digg.crypto.opaque.dto;
 
 import org.bouncycastle.util.Arrays;
-
 import se.digg.crypto.opaque.error.InvalidInputException;
 import se.digg.crypto.opaque.protocol.TLSSyntaxParser;
-
-/**
- * Envelope data structure
- */
 
 /**
  * The Envelope record encapsulates a cryptographic envelope containing a nonce and an
@@ -20,12 +15,14 @@ import se.digg.crypto.opaque.protocol.TLSSyntaxParser;
  * @param nonce The nonce value in the OPAQUE envelope.
  * @param authTag The authentication tag in the OPAQUE envelope.
  */
+
 public record Envelope(
     byte[] nonce,
     byte[] authTag) {
 
   /**
    * Constructs an {@code Envelope} object from its byte-encoded representation.
+   *
    * <p>
    * This method parses the provided byte array to extract the nonce and the remaining data, which
    * typically represents the authentication tag.

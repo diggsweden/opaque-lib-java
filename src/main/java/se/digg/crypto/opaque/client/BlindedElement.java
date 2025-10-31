@@ -7,7 +7,7 @@ package se.digg.crypto.opaque.client;
 import org.bouncycastle.math.ec.ECPoint;
 
 /**
- * Blinded Element
+ * Blinded Element.
  */
 
 public record BlindedElement(
