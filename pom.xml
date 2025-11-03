@@ -10,7 +10,7 @@ SPDX-License-Identifier: EUPL-1.2
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.digg.crypto</groupId>
   <artifactId>opaque-java</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>0.8.0-SNAPSHOT</version>
   <name>Opaque Java Library</name>
 
   <description>Java implementation of the Opaque IETF draft standard</description>
