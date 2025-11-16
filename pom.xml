@@ -45,8 +45,7 @@ SPDX-License-Identifier: EUPL-1.2
     <maven.compiler.release>${java.version}</maven.compiler.release>
 
     <!-- Dependency versions -->
-    <bouncycastle.version>1.82</bouncycastle.version>
-    <hash2curve.version>0.8.0-SNAPSHOT</hash2curve.version>
+    <bouncycastle.version>1.83-SNAPSHOT</bouncycastle.version>
     <jackson.version>2.20.1</jackson.version>
     <junit.version>6.0.1</junit.version>
     <lombok.version>1.18.42</lombok.version>
@@ -107,11 +106,6 @@ SPDX-License-Identifier: EUPL-1.2
         <artifactId>bcutil-jdk18on</artifactId>
         <version>${bouncycastle.version}</version>
       </dependency>
-      <dependency>
-        <groupId>se.digg.crypto</groupId>
-        <artifactId>hash2curve</artifactId>
-        <version>${hash2curve.version}</version>
-      </dependency>
 
     </dependencies>
   </dependencyManagement>
@@ -127,17 +121,20 @@ SPDX-License-Identifier: EUPL-1.2
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-jdk18on</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcutil-jdk18on</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
       <version>${junit.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>se.digg.crypto</groupId>
-      <artifactId>hash2curve</artifactId>
     </dependency>
 
     <dependency>

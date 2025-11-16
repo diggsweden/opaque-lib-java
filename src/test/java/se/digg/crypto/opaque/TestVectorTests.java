@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.hash2curve.data.HashToCurveProfile;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.math.ec.ECPoint;
@@ -26,7 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import se.digg.crypto.hashtocurve.data.HashToCurveProfile;
 import se.digg.crypto.opaque.client.BlindedElement;
 import se.digg.crypto.opaque.client.CleartextCredentials;
 import se.digg.crypto.opaque.client.ClientAkeState;

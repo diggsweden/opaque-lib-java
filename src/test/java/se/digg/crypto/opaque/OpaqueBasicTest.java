@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
+import org.bouncycastle.crypto.hash2curve.data.HashToCurveProfile;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import lombok.extern.slf4j.Slf4j;
-import se.digg.crypto.hashtocurve.data.HashToCurveProfile;
 import se.digg.crypto.opaque.client.ClientKeyExchangeResult;
 import se.digg.crypto.opaque.client.ClientState;
 import se.digg.crypto.opaque.client.OpaqueClient;
@@ -175,7 +175,7 @@ class OpaqueBasicTest {
     KeyPairRecord serverKeyPair = oprf.deriveKeyPair(OpaqueUtils.random(64), "serverKeyPair");
     KeyPair serverKeyPariObjects = oprf.getKeyPair(serverKeyPair);
     OpaqueServer server = new DefaultOpaqueServer(oprf, hkdf, hashFunctions);
-    server.setStaticOprfKeyPair(serverKeyPariObjects);
+    //server.setStaticOprfKeyPair(serverKeyPariObjects);
     String password = "650132";
     byte[] oprfSeed = OpaqueUtils.random(128);
     performTest("HSM Opaque Test with 25519", client, server, oprfSeed, password,

@@ -10,21 +10,21 @@ import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.digests.SHA384Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
+import org.bouncycastle.crypto.hash2curve.CurveProcessor;
+import org.bouncycastle.crypto.hash2curve.HashToEllipticCurve;
+import org.bouncycastle.crypto.hash2curve.HashToScalar;
+import org.bouncycastle.crypto.hash2curve.MapToCurve;
+import org.bouncycastle.crypto.hash2curve.MessageExpansion;
+import org.bouncycastle.crypto.hash2curve.data.HashToCurveProfile;
+import org.bouncycastle.crypto.hash2curve.impl.GenericCurveProcessor;
+import org.bouncycastle.crypto.hash2curve.impl.GenericHashToField;
+import org.bouncycastle.crypto.hash2curve.impl.GenericOPRFHashToScalar;
+import org.bouncycastle.crypto.hash2curve.impl.ShallueVanDeWoestijneMapToCurve;
+import org.bouncycastle.crypto.hash2curve.impl.XmdMessageExpansion;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
-import se.digg.crypto.hashtocurve.CurveProcessor;
-import se.digg.crypto.hashtocurve.HashToEllipticCurve;
-import se.digg.crypto.hashtocurve.HashToScalar;
-import se.digg.crypto.hashtocurve.MapToCurve;
-import se.digg.crypto.hashtocurve.MessageExpansion;
-import se.digg.crypto.hashtocurve.data.HashToCurveProfile;
-import se.digg.crypto.hashtocurve.impl.GenericCurveProcessor;
-import se.digg.crypto.hashtocurve.impl.GenericHashToField;
-import se.digg.crypto.hashtocurve.impl.GenericOPRFHashToScalar;
-import se.digg.crypto.hashtocurve.impl.ShallueVanDeWoestijneMapToCurve;
-import se.digg.crypto.hashtocurve.impl.XmdMessageExpansion;
 import se.digg.crypto.opaque.OpaqueUtils;
 import se.digg.crypto.opaque.crypto.DstContext;
 import se.digg.crypto.opaque.crypto.OpaqueCurve;
@@ -69,14 +69,16 @@ public class DefaultOpaqueCurve implements OpaqueCurve {
       default -> throw new IllegalArgumentException("Unsupported has to curve profile");
     };
 
-    CurveProcessor curveProcessor = new GenericCurveProcessor(spec);
+    CurveProcessor curveProcessor = new GenericCurveProcessor(spec.getCurve().getCofactor());
     MessageExpansion messExp = new XmdMessageExpansion(digest, hashToCurveProfile.getK());
     GenericHashToField hashToField =
-        new GenericHashToField(dst.getHash2CurveDST(), spec, messExp, hashToCurveProfile.getL());
-    MapToCurve mapToCurve = new ShallueVanDeWoestijneMapToCurve(spec, hashToCurveProfile.getZ());
+        new GenericHashToField(dst.getHash2CurveDST(), spec.getCurve(), messExp,
+            hashToCurveProfile.getL());
+    MapToCurve mapToCurve = new ShallueVanDeWoestijneMapToCurve(spec.getCurve(),
+        hashToCurveProfile.getZ());
     this.h2c = new HashToEllipticCurve(hashToField, mapToCurve, curveProcessor);
     this.hashToScalar =
-        new GenericOPRFHashToScalar(parameterSpec, digest, hashToCurveProfile.getK());
+        new GenericOPRFHashToScalar(parameterSpec.getCurve(), digest, hashToCurveProfile.getK());
   }
 
   @Override
