@@ -155,6 +155,7 @@ public class DefaultOprfFunction extends AbstractOprfFunction {
       throws DeserializationException, NoSuchAlgorithmException, InvalidKeyException,
       NoSuchProviderException,
       InvalidKeySpecException {
+
     KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH");
     keyAgreement.init(privateKey);
     keyAgreement.doPhase(getPublicECKey(serializeElement(publicPoint)), true);
