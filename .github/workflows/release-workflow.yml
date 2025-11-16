@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   release:
-    uses: diggsweden/reusable-ci/.github/workflows/release-orchestrator.yml@c9d1aa14de12397376162378e5cb218e0750c550 # v2.1.1
+    uses: diggsweden/reusable-ci/.github/workflows/release-orchestrator.yml@1baa694d94c5324f9b5abec6d22542d2c395169d # v2.2.3
     permissions:
       contents: write # Create GitHub releases and tags
       packages: write # Publish to GitHub Packages (backup)
