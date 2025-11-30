@@ -59,7 +59,7 @@ SPDX-License-Identifier: EUPL-1.2
     <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
     <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
     <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
-    <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
+    <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
 
     <!-- Code quality plugin versions -->
     <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
