@@ -45,7 +45,7 @@ SPDX-License-Identifier: EUPL-1.2
     <maven.compiler.release>${java.version}</maven.compiler.release>
 
     <!-- Dependency versions -->
-    <bouncycastle.version>1.82</bouncycastle.version>
+    <bouncycastle.version>1.83</bouncycastle.version>
     <hash2curve.version>0.8.0-SNAPSHOT</hash2curve.version>
     <jackson.version>2.20.1</jackson.version>
     <junit.version>6.0.1</junit.version>
