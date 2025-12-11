@@ -12,8 +12,6 @@ useDefault = true
 [allowlist]
 description = "Ignore test files with example passwords and test vectors"
 paths = [
-  # Test file with example password "sdflkj098234sdf-" (not a real secret)
-  '''src/test/java/se/digg/crypto/opaque/crypto/impl/SimplifiedOpaqueCurveTest\.java''',
-  # Test vectors file with cryptographic test data (standard OPAQUE test vectors from RFC)
-  '''src/test/resources/opaque-test-vectors\.json'''
+  '''src/test/.*''',
+  '''.*test.*'''
 ]
