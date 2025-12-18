@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   pr-checks:
-    uses: diggsweden/reusable-ci/.github/workflows/pullrequest-orchestrator.yml@e29145e720cef0b86ef147c72c2d001b5ac6c8b9 # v2.4.2
+    uses: diggsweden/reusable-ci/.github/workflows/pullrequest-orchestrator.yml@e1e1387d5b0399bb5edb00e40485746772344176 # v2.6.0
     secrets: inherit # Pass org-level secrets (for private dependencies if any)
     permissions:
       contents: read # Clone repository and read source code
@@ -22,7 +22,7 @@ jobs:
     with:
       project-type: maven
       linters.megalint: false # Deprecated - replaced by just+mise
-      linters.justmiselint: true # Use just+mise for all linting
+      linters.devbasecheck: true # Use just+mise for all linting
       linters.commitlint: false # Deprecated - handled by just+mise
       linters.licenselint: false # Deprecated - handled by just+mise
 
