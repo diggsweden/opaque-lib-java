@@ -5,23 +5,15 @@
 package se.digg.crypto.opaque.crypto.impl;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.digests.SHA384Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
-import org.bouncycastle.crypto.hash2curve.CurveProcessor;
+import org.bouncycastle.crypto.hash2curve.HashToCurveProfile;
 import org.bouncycastle.crypto.hash2curve.HashToEllipticCurve;
-import org.bouncycastle.crypto.hash2curve.HashToScalar;
-import org.bouncycastle.crypto.hash2curve.MapToCurve;
-import org.bouncycastle.crypto.hash2curve.MessageExpansion;
-import org.bouncycastle.crypto.hash2curve.data.HashToCurveProfile;
-import org.bouncycastle.crypto.hash2curve.impl.GenericCurveProcessor;
-import org.bouncycastle.crypto.hash2curve.impl.GenericHashToField;
-import org.bouncycastle.crypto.hash2curve.impl.GenericOPRFHashToScalar;
-import org.bouncycastle.crypto.hash2curve.impl.ShallueVanDeWoestijneMapToCurve;
-import org.bouncycastle.crypto.hash2curve.impl.XmdMessageExpansion;
-import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.crypto.hash2curve.OPRFHashToScalar;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.Arrays;
@@ -39,7 +31,7 @@ public class DefaultOpaqueCurve implements OpaqueCurve {
 
   protected final ECParameterSpec parameterSpec;
   protected final HashToEllipticCurve h2c;
-  protected final HashToScalar hashToScalar;
+  protected final OPRFHashToScalar hashToScalar;
 
   protected final DstContext dst;
 
@@ -54,31 +46,18 @@ public class DefaultOpaqueCurve implements OpaqueCurve {
     this.privateKeySerializationSize = (int) Math.ceil((double) bitLen / 8);
     this.dst = dst;
 
-    ECParameterSpec spec = switch (hashToCurveProfile) {
-      case P256_XMD_SHA_256_SSWU_RO_ -> ECNamedCurveTable.getParameterSpec("P-256");
-      case P384_XMD_SHA_384_SSWU_RO_ -> ECNamedCurveTable.getParameterSpec("P-384");
-      case P521_XMD_SHA_512_SSWU_RO_ -> ECNamedCurveTable.getParameterSpec("P-521");
-      case curve25519_XMD_SHA_512_ELL2_RO_ -> ECNamedCurveTable.getParameterSpec("curve25519");
-      default -> throw new IllegalArgumentException("Unsupported has to curve profile");
-    };
     Digest digest = switch (hashToCurveProfile) {
-      case P256_XMD_SHA_256_SSWU_RO_ -> new SHA256Digest();
-      case P384_XMD_SHA_384_SSWU_RO_ -> new SHA384Digest();
-      case P521_XMD_SHA_512_SSWU_RO_ -> new SHA512Digest();
-      case curve25519_XMD_SHA_512_ELL2_RO_ -> new SHA512Digest();
+      case P256_XMD_SHA_256 -> new SHA256Digest();
+      case P384_XMD_SHA_384 -> new SHA384Digest();
+      case P521_XMD_SHA_512 -> new SHA512Digest();
+      case CURVE25519W_XMD_SHA_512_ELL2 -> new SHA512Digest();
       default -> throw new IllegalArgumentException("Unsupported has to curve profile");
     };
 
-    CurveProcessor curveProcessor = new GenericCurveProcessor(spec.getCurve().getCofactor());
-    MessageExpansion messExp = new XmdMessageExpansion(digest, hashToCurveProfile.getK());
-    GenericHashToField hashToField =
-        new GenericHashToField(dst.getHash2CurveDST(), spec.getCurve(), messExp,
-            hashToCurveProfile.getL());
-    MapToCurve mapToCurve = new ShallueVanDeWoestijneMapToCurve(spec.getCurve(),
-        hashToCurveProfile.getZ());
-    this.h2c = new HashToEllipticCurve(hashToField, mapToCurve, curveProcessor);
-    this.hashToScalar =
-        new GenericOPRFHashToScalar(parameterSpec.getCurve(), digest, hashToCurveProfile.getK());
+    this.h2c = HashToEllipticCurve.getInstance(hashToCurveProfile,
+        new String(dst.getHash2CurveDST(), StandardCharsets.UTF_8));
+    this.hashToScalar = new OPRFHashToScalar(parameterSpec.getCurve(), digest,
+        hashToCurveProfile.getK());
   }
 
   @Override
@@ -98,7 +77,7 @@ public class DefaultOpaqueCurve implements OpaqueCurve {
 
   @Override
   public ECPoint hashToGroup(byte[] seed) {
-    return h2c.hashToEllipticCurve(seed);
+    return h2c.hashToCurve(seed);
   }
 
   @Override

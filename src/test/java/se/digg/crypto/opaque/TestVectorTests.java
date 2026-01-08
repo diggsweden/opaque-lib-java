@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
-import org.bouncycastle.crypto.hash2curve.data.HashToCurveProfile;
+import org.bouncycastle.crypto.hash2curve.HashToCurveProfile;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.math.ec.ECPoint;
@@ -95,17 +95,17 @@ public class TestVectorTests {
     log.info("Testing P-256");
     testOpaqueCurve(new DefaultOpaqueCurve(
         ECNamedCurveTable.getParameterSpec("P-256"),
-        HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_,
+        HashToCurveProfile.P256_XMD_SHA_256,
         new DstContext(DstContext.IDENTIFIER_P256_SHA256)));
     log.info("Testing P-384");
     testOpaqueCurve(new DefaultOpaqueCurve(
         ECNamedCurveTable.getParameterSpec("P-384"),
-        HashToCurveProfile.P384_XMD_SHA_384_SSWU_RO_,
+        HashToCurveProfile.P384_XMD_SHA_384,
         new DstContext(DstContext.IDENTIFIER_P384_SHA384)));
     log.info("Testing P-521");
     testOpaqueCurve(new DefaultOpaqueCurve(
         ECNamedCurveTable.getParameterSpec("P-521"),
-        HashToCurveProfile.P521_XMD_SHA_512_SSWU_RO_,
+        HashToCurveProfile.P521_XMD_SHA_512,
         new DstContext(DstContext.IDENTIFIER_P521_SHA512)));
   }
 
@@ -142,7 +142,7 @@ public class TestVectorTests {
     StretchAlgorithm stretchAlgorithm = new ArgonStretch(ArgonStretch.ARGON_PROFILE_IDENTITY);
     HashFunctions hashFunctions = new HashFunctions(new SHA256Digest(), stretchAlgorithm);
     OpaqueCurve opaqueCurve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"),
-        HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_,
+        HashToCurveProfile.P256_XMD_SHA_256,
         new DstContext(DstContext.IDENTIFIER_P256_SHA256));
     KeyDerivationFunctions keyDerivationFunctions = new HKDFKeyDerivation(hashFunctions);
     OprfFunctions oprf = new DefaultOprfFunction(opaqueCurve, hashFunctions, "OPAQUE-POC");
@@ -281,7 +281,7 @@ public class TestVectorTests {
     StretchAlgorithm stretchAlgorithm = new ArgonStretch(ArgonStretch.ARGON_PROFILE_IDENTITY);
     HashFunctions hashFunctions = new HashFunctions(new SHA256Digest(), stretchAlgorithm);
     OpaqueCurve opaqueCurve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"),
-        HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_,
+        HashToCurveProfile.P256_XMD_SHA_256,
         new DstContext(DstContext.IDENTIFIER_P256_SHA256));
     OprfFunctions oprf = new DefaultOprfFunction(opaqueCurve, hashFunctions, "Demo");
 

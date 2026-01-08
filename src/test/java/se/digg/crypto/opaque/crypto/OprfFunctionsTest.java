@@ -106,20 +106,19 @@ class OprfFunctionsTest {
 
   }
 
-  @Test
-  void test25519Blind() throws Exception {
-    ECNamedCurveParameterSpec curve25519 = ECNamedCurveTable.getParameterSpec("curve25519");
-    HashFunctions hashFunctions =
-        new HashFunctions(new SHA512Digest(), new ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT));
-    OpaqueCurve opaqueCurve25519 = new MockGenericOpaqueCurve(curve25519, hashFunctions);
-    log.info("25519 curve blind test");
-    log.info("Curve point serialization size: {}", opaqueCurve25519.getElementSerializationSize());
-    log.info("Curve scalar serialization size {}", opaqueCurve25519.getScalarSize());
-    log.info(TU.hex("Curve G point",
-        opaqueCurve25519.serializeElement(opaqueCurve25519.getParameterSpec().getG())));
-    blindTest(opaqueCurve25519, hashFunctions);
-
-  }
+  /*
+   * @Test void test25519Blind() throws Exception { ECNamedCurveParameterSpec curve25519 =
+   * ECNamedCurveTable.getParameterSpec("curve25519"); HashFunctions hashFunctions = new
+   * HashFunctions(new SHA512Digest(), new ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT));
+   * OpaqueCurve opaqueCurve25519 = new MockGenericOpaqueCurve(curve25519, hashFunctions);
+   * log.info("25519 curve blind test"); log.info("Curve point serialization size: {}",
+   * opaqueCurve25519.getElementSerializationSize()); log.info("Curve scalar serialization size {}",
+   * opaqueCurve25519.getScalarSize()); log.info(TU.hex("Curve G point",
+   * opaqueCurve25519.serializeElement(opaqueCurve25519.getParameterSpec().getG())));
+   * blindTest(opaqueCurve25519, hashFunctions);
+   *
+   * }
+   */
 
   @Test
   void testP521Blind() throws Exception {

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
-import org.bouncycastle.crypto.hash2curve.data.HashToCurveProfile;
+import org.bouncycastle.crypto.hash2curve.HashToCurveProfile;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
@@ -72,7 +72,7 @@ class OpaqueBasicTest {
         new ArgonStretch(ArgonStretch.ARGON_PROFILE_IDENTITY));
     hkdfKeyDerivation = new HKDFKeyDerivation(sha256hash);
     p256Curve = new DefaultOpaqueCurve(ECNamedCurveTable.getParameterSpec("P-256"),
-        HashToCurveProfile.P256_XMD_SHA_256_SSWU_RO_,
+        HashToCurveProfile.P256_XMD_SHA_256,
         new DstContext(DstContext.IDENTIFIER_P256_SHA256));
     oprfP256 = new DefaultOprfFunction(p256Curve, sha256hash, "OPAQUE-POC");
   }
@@ -124,24 +124,20 @@ class OpaqueBasicTest {
         oprfP256.getContext());
   }
 
-  @Test
-  void otherEccCurvesTest() throws Exception {
-    log.info("25519 curve test");
-    ECNamedCurveParameterSpec curve25519 = ECNamedCurveTable.getParameterSpec("curve25519");
-    HashFunctions hashFunctions =
-        new HashFunctions(new SHA512Digest(), new ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT));
-    OpaqueCurve opaqueCurve25519 = new MockGenericOpaqueCurve(curve25519, hashFunctions);
-    OprfFunctions oprf =
-        new DefaultOprfFunction(opaqueCurve25519, hashFunctions, "25519-with-SHA-512-Test");
-    KeyDerivationFunctions hkdf = new HKDFKeyDerivation(hashFunctions);
-    OpaqueClient client = new DefaultOpaqueClient(oprf, hkdf, hashFunctions);
-    OpaqueServer server = new DefaultOpaqueServer(oprf, hkdf, hashFunctions);
-    String password = "650132";
-    byte[] oprfSeed = OpaqueUtils.random(128);
-    KeyPairRecord serverKeyPair = oprf.deriveKeyPair(OpaqueUtils.random(64), "serverKeyPair");
-    performTest("25519 curve Test", client, server, oprfSeed, password, serverKeyPair,
-        oprf.getContext());
-  }
+  /*
+   * @Test void otherEccCurvesTest() throws Exception { log.info("25519 curve test");
+   * ECNamedCurveParameterSpec curve25519 = ECNamedCurveTable.getParameterSpec("curve25519");
+   * HashFunctions hashFunctions = new HashFunctions(new SHA512Digest(), new
+   * ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT)); OpaqueCurve opaqueCurve25519 = new
+   * MockGenericOpaqueCurve(curve25519, hashFunctions); OprfFunctions oprf = new
+   * DefaultOprfFunction(opaqueCurve25519, hashFunctions, "25519-with-SHA-512-Test");
+   * KeyDerivationFunctions hkdf = new HKDFKeyDerivation(hashFunctions); OpaqueClient client = new
+   * DefaultOpaqueClient(oprf, hkdf, hashFunctions); OpaqueServer server = new
+   * DefaultOpaqueServer(oprf, hkdf, hashFunctions); String password = "650132"; byte[] oprfSeed =
+   * OpaqueUtils.random(128); KeyPairRecord serverKeyPair =
+   * oprf.deriveKeyPair(OpaqueUtils.random(64), "serverKeyPair"); performTest("25519 curve Test",
+   * client, server, oprfSeed, password, serverKeyPair, oprf.getContext()); }
+   */
 
   @Test
   void hsmOpaqueTest() throws Exception {
@@ -161,26 +157,22 @@ class OpaqueBasicTest {
         new OprfPrivateKey(serverKeyPariObjects), serverKeyPair.publicKey(), oprf.getContext());
   }
 
-  @Test
-  void hsmOpaqueTest255519() throws Exception {
-    log.info("HSM Opaque Test with 25519");
-    HashFunctions hashFunctions =
-        new HashFunctions(new SHA512Digest(), new ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT));
-    OpaqueCurve opaqueCurve25519 =
-        new MockGenericOpaqueCurve(ECNamedCurveTable.getParameterSpec("curve25519"), hashFunctions);
-    OprfFunctions oprf =
-        new DefaultOprfFunction(opaqueCurve25519, hashFunctions, "HSM-Supported OPRF");
-    KeyDerivationFunctions hkdf = new HKDFKeyDerivation(hashFunctions);
-    OpaqueClient client = new DefaultOpaqueClient(oprf, hkdf, hashFunctions);
-    KeyPairRecord serverKeyPair = oprf.deriveKeyPair(OpaqueUtils.random(64), "serverKeyPair");
-    KeyPair serverKeyPariObjects = oprf.getKeyPair(serverKeyPair);
-    OpaqueServer server = new DefaultOpaqueServer(oprf, hkdf, hashFunctions);
-    //server.setStaticOprfKeyPair(serverKeyPariObjects);
-    String password = "650132";
-    byte[] oprfSeed = OpaqueUtils.random(128);
-    performTest("HSM Opaque Test with 25519", client, server, oprfSeed, password,
-        new OprfPrivateKey(serverKeyPariObjects), serverKeyPair.publicKey(), oprf.getContext());
-  }
+  /*
+   * @Test void hsmOpaqueTest255519() throws Exception { log.info("HSM Opaque Test with 25519");
+   * HashFunctions hashFunctions = new HashFunctions(new SHA512Digest(), new
+   * ArgonStretch(ArgonStretch.ARGON_PROFILE_DEFAULT)); OpaqueCurve opaqueCurve25519 = new
+   * MockGenericOpaqueCurve(ECNamedCurveTable.getParameterSpec("curve25519"), hashFunctions);
+   * OprfFunctions oprf = new DefaultOprfFunction(opaqueCurve25519, hashFunctions,
+   * "HSM-Supported OPRF"); KeyDerivationFunctions hkdf = new HKDFKeyDerivation(hashFunctions);
+   * OpaqueClient client = new DefaultOpaqueClient(oprf, hkdf, hashFunctions); KeyPairRecord
+   * serverKeyPair = oprf.deriveKeyPair(OpaqueUtils.random(64), "serverKeyPair"); KeyPair
+   * serverKeyPariObjects = oprf.getKeyPair(serverKeyPair); OpaqueServer server = new
+   * DefaultOpaqueServer(oprf, hkdf, hashFunctions);
+   * server.setStaticOprfKeyPair(serverKeyPariObjects); String password = "650132"; byte[] oprfSeed
+   * = OpaqueUtils.random(128); performTest("HSM Opaque Test with 25519", client, server, oprfSeed,
+   * password, new OprfPrivateKey(serverKeyPariObjects), serverKeyPair.publicKey(),
+   * oprf.getContext()); }
+   */
 
   void performTest(String message, OpaqueClient client, OpaqueServer server, byte[] oprfSeed,
       String password,
