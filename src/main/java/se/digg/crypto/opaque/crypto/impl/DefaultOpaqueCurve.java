@@ -7,7 +7,7 @@ package se.digg.crypto.opaque.crypto.impl;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.ExtendedDigest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.digests.SHA384Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
@@ -46,7 +46,7 @@ public class DefaultOpaqueCurve implements OpaqueCurve {
     this.privateKeySerializationSize = (int) Math.ceil((double) bitLen / 8);
     this.dst = dst;
 
-    Digest digest = switch (hashToCurveProfile) {
+    ExtendedDigest digest = switch (hashToCurveProfile) {
       case P256_XMD_SHA_256 -> new SHA256Digest();
       case P384_XMD_SHA_384 -> new SHA384Digest();
       case P521_XMD_SHA_512 -> new SHA512Digest();
