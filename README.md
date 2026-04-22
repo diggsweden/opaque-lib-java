@@ -117,7 +117,7 @@ The following protocol changes are made to the OPRF function:
 
 Blind evaluate calculation is updated to:
 
-> blindEvalueate = Ppw *b* rs [* ks ]
+> blindEvalueate = Ppw *b* rs \[* ks \]
 
 Where `Ppw` is the password point derived from G.HashToGroup(password), `b`
 is the blind `rs` is the derived OPRF private key (as defined in OPAQUE)
